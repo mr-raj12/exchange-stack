@@ -1,0 +1,19 @@
+# Dependencies — re-installed from package.json + bun.lock, no need to track
+node_modules/
+
+# Secrets — actual values per machine, never committed
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+
+# OS / editor junk
+.DS_Store
+.vscode/
+.idea/
