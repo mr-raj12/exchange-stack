@@ -1,0 +1,21 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+// no url as when using a driver adapter, prisma doesnt need connection string in schema, adapter is what holds the connction
+
+model User {
+  id  String @id @default(uuid()) // @id = Primary Key, and @default(uuid()) = if no valueporvided on insert, generate a uuid v4 (prisma generates uuid in client not in postgres)
+  // alternative @default(dbgenerated("gen_random_uuid()")) == will push it server side  
+  username String @unique // @unique creates unique index 
+  password String
+}
