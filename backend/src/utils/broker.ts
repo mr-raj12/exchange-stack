@@ -1,0 +1,82 @@
+import "dotenv/config";
+import { v4 as uuidv4 } from "uuid";
+import { redis } from "./redis.js";
+import type {
+  EngineRequestType,
+  EngineResponse,
+} from "../types/engine-messages";
+
+const INCOMING_QUEUE = process.env.INCOMING_QUEUE!;
+const BACKEND_QUEUE_ID = process.env.BACKEND_QUEUE_ID!;
+const RESPONSE_QUEUE = process.env.RESPONSE_QUEUE!;
+const TIMEOUT_MS = Number(process.env.ENGINE_TIMEOUT_MS!) || 30000;
+
+type Pending = {
+  resolve: (value: unknown) => void;
+  reject: (err: Error) => void;
+  timer: ReturnType<typeof setTimeout>;
+};
+
+const pending = new Map<string, Pending>();
+
+export async function sendToEngine<TResponse = unknown>(
+  type: EngineRequestType,
+  data: unknown,
+): Promise<TResponse> {
+  const correlationId = uuidv4();
+  return new Promise<TResponse>((resolve, reject) => {
+    
+    const timer = setTimeout(() => {
+      pending.delete(correlationId);
+      reject(new Error("engine timeout"));
+    }, TIMEOUT_MS);
+
+    pending.set(correlationId, {
+      resolve: resolve as (v: unknown) => void,
+      reject,
+      timer,
+    });
+
+    redis
+      .lpush(
+        INCOMING_QUEUE,
+        JSON.stringify({
+          type,
+          data,
+          correlationId,
+          responseQueue: RESPONSE_QUEUE,
+        }),
+      )
+      .catch((err) => {
+        clearTimeout(timer);
+        pending.delete(correlationId);
+        reject(err);
+      });
+  });
+}
+
+export async function startResponseLoop(): Promise<void> {
+  console.log(`backend listening for responses on ${RESPONSE_QUEUE}`);
+  while (true) {
+    try {
+      const result = await redis.brpop(RESPONSE_QUEUE, 1);
+      if (!result) continue;
+
+      const [, raw] = result;
+      const message = JSON.parse(raw) as EngineResponse;
+      const handler = pending.get(message.correlationId);
+      if (!handler) {
+        console.warn(
+          `response with unknown correlationId: ${message.correlationId}`,
+        );
+        continue;
+      }
+      clearTimeout(handler.timer);
+      pending.delete(message.correlationId);
+      handler.resolve(message.payload);
+    } catch (err) {
+      console.log("response loop error:", err);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+}
