@@ -19,6 +19,15 @@ type Pending = {
 
 const pending = new Map<string, Pending>();
 
+//for <TResponse = unknown> means "The caller can decide what response type this function returns."
+// Simple generic example
+// function identity<T>(value: T): T {
+//   return value;
+// }
+// If you call:
+// identity<string>("hello")
+// Then:
+// T = string
 export async function sendToEngine<TResponse = unknown>(
   type: EngineRequestType,
   data: unknown,
