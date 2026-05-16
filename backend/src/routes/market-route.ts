@@ -3,4 +3,4 @@ import { getDepth } from "../controllers/market-controller";
 
 export const marketRouter = Router();
 
-marketRouter.get("/depth",getDepth);
+marketRouter.get("/:symbol",getDepth);

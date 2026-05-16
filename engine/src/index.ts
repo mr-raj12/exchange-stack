@@ -11,7 +11,7 @@ if (!process.env.INCOMING_QUEUE) {
 const INCOMING_QUEUE = process.env.INCOMING_QUEUE;
 
 async function main(): Promise<void> {
-  console.log("engine listening on queue ", INCOMING_QUEUE);
+  console.log("Engine listening on Redis queue", INCOMING_QUEUE);
   while (true) {
     try {
       const result = await redis.brpop(INCOMING_QUEUE, 0);

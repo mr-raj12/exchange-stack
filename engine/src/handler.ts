@@ -6,14 +6,14 @@ export function handleEngineRequest(request: EngineRequest): unknown {
       //placeholder - real matching is the assignment.
       return {
         orderId: "stub-order-id",
-        status: "accepted",
+        status: "filled",
         fills: [],
       };
     case "cancel_order":
     case "get_order":
     case "get_depth":
     case "get_user_balance":
-      throw new Error(`handler not implemented for type: ${request.type}`);
+      throw new Error(`TODO(student): ${request.type} handler not implemented`);
 
     default: {
       const exhaustive: never = request.type;

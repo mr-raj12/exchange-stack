@@ -6,6 +6,6 @@ export const orderRouter = Router();
 
 orderRouter.use(authMiddleware);
 
-orderRouter.post("/create",createOrder);
+orderRouter.post("/",createOrder);
 orderRouter.post("/cancel",cancelOrder);
 orderRouter.get("/:id",getOrder);
