@@ -9,4 +9,4 @@ declare global { // opens the global namespace
 
 export {}; // makes file a module (else declare global syntax is invalid)
 
-// req.userId = string | underfined
+// req.userId = string | undefined, means if it exists then must be a string 
