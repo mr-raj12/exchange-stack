@@ -50,6 +50,10 @@ class ExchangeStore {
     // TODO: return the user's balances across assets.
     throw new Error("getUserBalance not implemented");
   }
+  deposit(_userId: string, _asset: string, _amount: number): unknown {  
+    // TODO: increase the user's balance for the given asset by the given amount.
+    throw new Error("deposit not implemented");
+  }
 }
 
 // type aur interface dono basically “types” hi represent krta h
