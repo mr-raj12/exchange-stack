@@ -3,14 +3,15 @@ export type EngineRequestType = // union of string literals, type m union hota h
   | "cancel_order"
   | "get_order"
   | "get_depth"
-  | "get_user_balance";
+  | "get_user_balance"
+  | "deposit";
 
 // interface supports merging, types cant 
 // types support intersection
 // < > is called generics, both type and interface can use this
 export interface EngineRequest<T = unknown> {
   // T = generic
-  type: EngineRequest;
+  type: EngineRequestType;
   data: T;
   correlationId: string;
   responseQueue: string;

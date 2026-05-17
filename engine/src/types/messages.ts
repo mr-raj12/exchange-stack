@@ -3,6 +3,7 @@ export type EngineRequestType =
   | "cancel_order"
   | "get_order"
   | "get_depth"
+  | "deposit"
   | "get_user_balance";
 
 export interface EngineRequest<T = unknown> {
