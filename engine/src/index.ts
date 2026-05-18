@@ -34,6 +34,7 @@ async function main(): Promise<void> {
         }),
       );
     } catch (err) {
+      // catch catches any error thown as throw new error("some error") and also any error which is not handled in try block
       console.error("engine loop error:", err);
       setTimeout(() => {}, 1000);
       await new Promise((r) => setTimeout(r, 1000));
@@ -44,3 +45,8 @@ main().catch((err) => {
   console.error("engine crashed: ", err);
   process.exit(1);
 });
+
+
+// error call stack ke upar bubble karta rehta hai jab tak koi try/catch na mile. So:
+// nestedFunction throws → getUserBalance (no catch) → handleEngineRequest (no catch) → index.ts catch → { error: message } as payload.
+// Koi bhi intermediate function mein try/catch nahi chahiye — bas ek top-level catch kaafi hai.

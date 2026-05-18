@@ -21,6 +21,10 @@ export async function deposit(req: Request, res: Response): Promise<void> {
     res.status(400).json({ error: "invalid asset or amount" });
     return;
   }
+  if(amount <= 0){
+    res.status(400).json({ error: "amount must be positive" });
+    return;
+  }
   try {
     const result = await sendToEngine("deposit", {
       userId: req.userId,
