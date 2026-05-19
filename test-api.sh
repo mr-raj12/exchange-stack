@@ -11,6 +11,7 @@ BASE_URL="${1:-${BASE_URL:-http://localhost:3000}}"
 RESULT_FILE="${RESULT_FILE:-test-results.json}"
 RUN_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date +"%Y-%m-%dT%H:%M:%SZ")
 SUFFIX=$(date +%s 2>/dev/null || echo "$$")
+SUITE_START_MS=$(date +%s%3N 2>/dev/null || echo 0)
 
 # ── colours ──────────────────────────────────────────────────
 GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
@@ -46,7 +47,9 @@ run_test() {
     fi
     [ -n "$body" ] && args+=(-d "$body")
 
+    local t_start; t_start=$(date +%s%3N 2>/dev/null || echo 0)
     local raw; raw=$(curl "${args[@]}" 2>/dev/null)
+    local duration_ms=$(( $(date +%s%3N 2>/dev/null || echo 0) - t_start ))
     local actual; actual=$(printf '%s' "$raw" | grep -o '__CEX_STATUS__[0-9]*' | sed 's/__CEX_STATUS__//')
     local resp; resp=$(printf '%s' "$raw" | sed 's/__CEX_STATUS__[0-9]*$//' | sed '$ { /^$/d }')
     [ -z "$actual" ] && actual="000"
@@ -68,7 +71,8 @@ run_test() {
         --arg n  "$name"   --arg m  "$method" --arg p  "$path" \
         --arg e  "$expected" --arg a "$actual" \
         --argjson passed "$passed" --argjson body "$safe_body" \
-        '{name:$n,method:$m,path:$p,expected_status:($e|tonumber),actual_status:($a|tonumber),passed:$passed,response:$body}'
+        --argjson duration_ms "$duration_ms" \
+        '{name:$n,method:$m,path:$p,expected_status:($e|tonumber),actual_status:($a|tonumber),passed:$passed,duration_ms:$duration_ms,response:$body}'
     )" >> "$TMP"
 }
 
@@ -81,7 +85,9 @@ _curl_json() { curl -s -X "$1" "$BASE_URL$2" -H "Content-Type: application/json"
 assert_body() {
     local name="$1" expr="$2" expected="$3" resp="$4"
     TOTAL=$((TOTAL + 1))
+    local t_start; t_start=$(date +%s%3N 2>/dev/null || echo 0)
     local actual; actual=$(printf '%s' "$resp" | jq -r "$expr" 2>/dev/null || echo "__jq_err__")
+    local duration_ms=$(( $(date +%s%3N 2>/dev/null || echo 0) - t_start ))
     local passed=false
     if [ "$actual" = "$expected" ]; then
         passed=true; PASS=$((PASS + 1))
@@ -92,7 +98,8 @@ assert_body() {
     fi
     printf '%s\n' "$(jq -n \
         --arg n "$name" --arg e "$expected" --arg a "$actual" --argjson passed "$passed" \
-        '{name:$n,method:"ASSERT",path:"(body check)",expected_status:0,actual_status:0,passed:$passed,response:{expected:$e,actual:$a}}'
+        --argjson duration_ms "$duration_ms" \
+        '{name:$n,method:"ASSERT",path:"(body check)",expected_status:0,actual_status:0,passed:$passed,duration_ms:$duration_ms,response:{expected:$e,actual:$a}}'
     )" >> "$TMP"
 }
 
@@ -1097,12 +1104,14 @@ printf "  Total: %d  │  ${GREEN}Pass: %d${NC}  │  ${RED}Fail: %d${NC}\n" "$T
 printf "%.65s\n" "═══════════════════════════════════════════════════════════════════"
 
 # Assemble JSON output (use --slurpfile to avoid ARG_MAX limits)
+SUITE_DURATION_MS=$(( $(date +%s%3N 2>/dev/null || echo 0) - SUITE_START_MS ))
 jq -n \
     --arg run_at   "$RUN_AT" \
     --arg base_url "$BASE_URL" \
     --argjson total "$TOTAL" \
     --argjson pass  "$PASS" \
     --argjson fail  "$FAIL" \
+    --argjson suite_duration_ms "$SUITE_DURATION_MS" \
     --slurpfile tests "$TMP" \
     '{
         run_at:   $run_at,
@@ -1111,11 +1120,12 @@ jq -n \
             total: $total,
             pass:  $pass,
             fail:  $fail,
-            pass_rate: (if $total > 0 then (($pass / $total * 1000 | round) / 10) else 0 end)
+            pass_rate: (if $total > 0 then (($pass / $total * 1000 | round) / 10) else 0 end),
+            duration_ms: $suite_duration_ms
         },
         tests: $tests
     }' > "$RESULT_FILE"
 
-printf "  Results saved → %s\n\n" "$RESULT_FILE"
+printf "  Results saved → %s  (suite took %d ms)\n\n" "$RESULT_FILE" "$SUITE_DURATION_MS"
 
 [ "$FAIL" -gt 0 ] && exit 1 || exit 0

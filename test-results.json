@@ -1,11 +1,12 @@
 {
-  "run_at": "2026-05-19T00:39:59Z",
+  "run_at": "2026-05-19T00:50:40Z",
   "base_url": "http://localhost:3000",
   "summary": {
     "total": 174,
     "pass": 174,
     "fail": 0,
-    "pass_rate": 100
+    "pass_rate": 100,
+    "duration_ms": 143714
   },
   "tests": [
     {
@@ -15,6 +16,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 104,
       "response": {
         "ok": true
       }
@@ -26,10 +28,11 @@
       "expected_status": 201,
       "actual_status": 201,
       "passed": true,
+      "duration_ms": 503,
       "response": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNjUxOGI4OC1kNzc3LTQyZDItOTFiOC1lNGNmMzc5ODY4MDkiLCJpYXQiOjE3NzkxNTEyMDAsImV4cCI6MTc3OTc1NjAwMH0.O8_pCbPLsBnnB2Zd9w7ttM_tbGROvMsBaKbdVf4-0tE",
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
-        "username": "buyer_1779151199"
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1Y2I1ZmNiZC03ZjBhLTQyMTQtYTA4Ni1mNjBhNDVlZjgwM2UiLCJpYXQiOjE3NzkxNTE4NDEsImV4cCI6MTc3OTc1NjY0MX0.GeZfS0W4lpgb4zHO23GBcrJcQ_pqT94qoRSZWp_KIh8",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
+        "username": "buyer_1779151840"
       }
     },
     {
@@ -39,10 +42,11 @@
       "expected_status": 201,
       "actual_status": 201,
       "passed": true,
+      "duration_ms": 193,
       "response": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMjg5YzY0NC05Zjc1LTRmNTEtOGM0NS01MzQwN2U1NWNlNjQiLCJpYXQiOjE3NzkxNTEyMDAsImV4cCI6MTc3OTc1NjAwMH0.NHM3rR8EBVlsouajlLIUNEMjQAAcc_pwTRLypSgVgEs",
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
-        "username": "seller_1779151199"
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzN2Y0YzViZC1mNGEyLTRlZGUtYjM3Yi1hZjFiODRmYTY0YTgiLCJpYXQiOjE3NzkxNTE4NDIsImV4cCI6MTc3OTc1NjY0Mn0.ueN6I_yhyY3qWUIE3b_ui-TrnI9ycQT8ZGyBs97Vwk4",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
+        "username": "seller_1779151840"
       }
     },
     {
@@ -52,6 +56,7 @@
       "expected_status": 409,
       "actual_status": 409,
       "passed": true,
+      "duration_ms": 202,
       "response": {
         "error": "username already exists",
         "err": {
@@ -84,6 +89,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "error": "validation error",
         "issues": [
@@ -103,6 +109,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "error": "validation error",
         "issues": [
@@ -122,6 +129,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 86,
       "response": {
         "error": "validation error",
         "issues": [
@@ -141,6 +149,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 93,
       "response": {
         "error": "validation error",
         "issues": [
@@ -160,6 +169,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 96,
       "response": {
         "error": "validation error",
         "issues": [
@@ -179,6 +189,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "error": "validation error",
         "issues": [
@@ -204,10 +215,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 498,
       "response": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNjUxOGI4OC1kNzc3LTQyZDItOTFiOC1lNGNmMzc5ODY4MDkiLCJpYXQiOjE3NzkxNTEyMDMsImV4cCI6MTc3OTc1NjAwM30.VKh9_mDidzDUUZKtR9LPCENDYRypcEKZDXhW6yfvcBQ",
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
-        "username": "buyer_1779151199"
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1Y2I1ZmNiZC03ZjBhLTQyMTQtYTA4Ni1mNjBhNDVlZjgwM2UiLCJpYXQiOjE3NzkxNTE4NDUsImV4cCI6MTc3OTc1NjY0NX0._wZEz1D73OG84ahHH7VCrQx0SUwucARyo3HtJL0gKCs",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
+        "username": "buyer_1779151840"
       }
     },
     {
@@ -217,10 +229,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 189,
       "response": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMjg5YzY0NC05Zjc1LTRmNTEtOGM0NS01MzQwN2U1NWNlNjQiLCJpYXQiOjE3NzkxNTEyMDMsImV4cCI6MTc3OTc1NjAwM30.JXNQ8KiasEXTJj6YbbekiQZasEOFV9hFksZL25CAVuM",
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
-        "username": "seller_1779151199"
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzN2Y0YzViZC1mNGEyLTRlZGUtYjM3Yi1hZjFiODRmYTY0YTgiLCJpYXQiOjE3NzkxNTE4NDUsImV4cCI6MTc3OTc1NjY0NX0.416IMEIhb5ZDnPfOVbG3VIp5AWF0YdIpIWjk40oKwB8",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
+        "username": "seller_1779151840"
       }
     },
     {
@@ -230,6 +243,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 195,
       "response": {
         "error": "wrong password please check and retry"
       }
@@ -241,6 +255,7 @@
       "expected_status": 404,
       "actual_status": 404,
       "passed": true,
+      "duration_ms": 116,
       "response": {
         "error": "user does not exists!"
       }
@@ -252,6 +267,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "error": "validation error",
         "issues": [
@@ -271,6 +287,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "error": "validation error",
         "issues": [
@@ -290,6 +307,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "error": "validation error",
         "issues": [
@@ -309,6 +327,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "validation error",
         "issues": [
@@ -334,6 +353,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -345,6 +365,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -356,6 +377,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 88,
       "response": {
         "error": "invalid or expired token!"
       }
@@ -367,6 +389,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "error": "invalid or expired token!"
       }
@@ -378,6 +401,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 301,
       "response": {}
     },
     {
@@ -387,6 +411,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -398,6 +423,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 541,
       "response": {
         "BTC": 10
       }
@@ -409,6 +435,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 845,
       "response": {
         "BTC": 10,
         "USD": 500000
@@ -421,6 +448,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 850,
       "response": {
         "BTC": 10,
         "USD": 500000,
@@ -434,6 +462,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 835,
       "response": {
         "BTC": 10,
         "USD": 500000,
@@ -448,6 +477,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 838,
       "response": {
         "BTC": 30
       }
@@ -459,6 +489,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 845,
       "response": {
         "BTC": 30,
         "USD": 200000
@@ -471,6 +502,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 839,
       "response": {
         "error": "invalid asset"
       }
@@ -482,6 +514,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 847,
       "response": {
         "error": "invalid asset"
       }
@@ -493,6 +526,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 833,
       "response": {
         "error": "invalid asset"
       }
@@ -504,6 +538,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "amount must be positive"
       }
@@ -515,6 +550,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "amount must be positive"
       }
@@ -526,6 +562,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "error": "invalid asset or amount"
       }
@@ -537,6 +574,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 86,
       "response": {
         "error": "invalid asset or amount"
       }
@@ -548,6 +586,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "error": "invalid asset or amount"
       }
@@ -559,6 +598,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "invalid asset or amount"
       }
@@ -570,6 +610,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 87,
       "response": {
         "error": "invalid asset or amount"
       }
@@ -581,6 +622,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 845,
       "response": {
         "BTC": 10,
         "USD": 500000,
@@ -595,6 +637,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 835,
       "response": {
         "BTC": 30,
         "USD": 200000
@@ -607,6 +650,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 853,
       "response": {
         "bids": [],
         "asks": []
@@ -619,8 +663,14 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 844,
       "response": {
-        "bids": [],
+        "bids": [
+          {
+            "price": 2000,
+            "count": 5
+          }
+        ],
         "asks": []
       }
     },
@@ -631,6 +681,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 856,
       "response": {
         "bids": [],
         "asks": []
@@ -643,6 +694,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 847,
       "response": {
         "bids": [],
         "asks": []
@@ -655,6 +707,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 842,
       "response": {
         "error": "invalid market"
       }
@@ -666,6 +719,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 843,
       "response": {
         "error": "invalid market"
       }
@@ -677,6 +731,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 852,
       "response": {
         "error": "invalid market"
       }
@@ -688,6 +743,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 848,
       "response": {
         "error": "invalid market"
       }
@@ -699,6 +755,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -710,6 +767,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -721,6 +779,7 @@
       "expected_status": 401,
       "actual_status": 401,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "error": "missing or malfrmed Authorization header"
       }
@@ -732,6 +791,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 97,
       "response": {
         "error": "validation error",
         "issues": [
@@ -751,6 +811,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 86,
       "response": {
         "error": "validation error",
         "issues": [
@@ -770,6 +831,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "error": "validation error",
         "issues": [
@@ -789,6 +851,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 87,
       "response": {
         "error": "validation error",
         "issues": [
@@ -808,6 +871,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 86,
       "response": {
         "error": "validation error",
         "issues": [
@@ -827,6 +891,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 96,
       "response": {
         "error": "validation error",
         "issues": [
@@ -846,6 +911,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 250,
       "response": {
         "error": "validation error",
         "issues": [
@@ -865,6 +931,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "error": "validation error",
         "issues": [
@@ -884,6 +951,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "validation error",
         "issues": [
@@ -903,6 +971,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 88,
       "response": {
         "error": "validation error",
         "issues": [
@@ -922,6 +991,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "error": "validation error",
         "issues": [
@@ -941,6 +1011,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "error": "validation error",
         "issues": [
@@ -978,6 +1049,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "error": "validation error",
         "issues": [
@@ -997,6 +1069,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "error": "validation error",
         "issues": [
@@ -1016,6 +1089,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "error": "validation error",
         "issues": [
@@ -1035,6 +1109,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "error": "validation error",
         "issues": [
@@ -1054,6 +1129,7 @@
       "expected_status": 400,
       "actual_status": 400,
       "passed": true,
+      "duration_ms": 96,
       "response": {
         "error": "validation error",
         "issues": [
@@ -1079,10 +1155,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 737,
       "response": {
-        "orderId": "6be3b174-2799-456c-b3c9-5fe427c4ea1e",
+        "orderId": "4f9f56c1-68c4-4792-bc60-4df59f2f8418",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 30000,
@@ -1090,7 +1167,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151232766,
+        "timestamp": 1779151878847,
         "avgPrice": 0
       }
     },
@@ -1101,10 +1178,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 813,
       "response": {
-        "orderId": "8a28087d-2810-4835-9e88-eaab372f7e89",
+        "orderId": "154814a6-3a11-40ce-a747-88cbe9b04636",
         "filledQuantity": 1,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 30000,
@@ -1115,12 +1193,12 @@
           {
             "price": 30000,
             "quantity": 1,
-            "timestamp": 1779151233853,
-            "makerOrderId": "6be3b174-2799-456c-b3c9-5fe427c4ea1e",
-            "takerOrderId": "8a28087d-2810-4835-9e88-eaab372f7e89"
+            "timestamp": 1779151879896,
+            "makerOrderId": "4f9f56c1-68c4-4792-bc60-4df59f2f8418",
+            "takerOrderId": "154814a6-3a11-40ce-a747-88cbe9b04636"
           }
         ],
-        "timestamp": 1779151233853,
+        "timestamp": 1779151879896,
         "avgPrice": 30000
       }
     },
@@ -1131,10 +1209,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 824,
       "response": {
-        "orderId": "29d14ff2-3891-4218-806b-72804e01e13f",
+        "orderId": "336a7480-1dc8-4412-8b98-119502041e3f",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 1,
@@ -1142,7 +1221,7 @@
         "orderType": "market",
         "status": "CANCELLED",
         "fills": [],
-        "timestamp": 1779151234905,
+        "timestamp": 1779151880948,
         "avgPrice": 0
       }
     },
@@ -1153,10 +1232,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 812,
       "response": {
-        "orderId": "fa38b7c5-78f6-463f-a746-6671245aef64",
+        "orderId": "dd52a25b-1066-479d-865c-16851ab87ad4",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 1,
@@ -1164,7 +1244,7 @@
         "orderType": "market",
         "status": "CANCELLED",
         "fills": [],
-        "timestamp": 1779151235967,
+        "timestamp": 1779151881998,
         "avgPrice": 0
       }
     },
@@ -1175,10 +1255,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 832,
       "response": {
-        "orderId": "cba0165c-6118-4cce-8b6e-c8a353427508",
+        "orderId": "242521db-415f-471a-b79d-dc32e848e252",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 30000,
@@ -1186,7 +1267,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151237023,
+        "timestamp": 1779151883046,
         "avgPrice": 0
       }
     },
@@ -1197,10 +1278,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 816,
       "response": {
-        "orderId": "97b949b7-0909-4aeb-b257-2a33247c0d1a",
+        "orderId": "ffd840ea-e5cd-46f7-95a6-b7e937680241",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "ETH_USD",
         "side": "buy",
         "price": 2000,
@@ -1208,7 +1290,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151238076,
+        "timestamp": 1779151884095,
         "avgPrice": 0
       }
     },
@@ -1219,6 +1301,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 831,
       "response": {
         "error": "order not found"
       }
@@ -1230,6 +1313,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 821,
       "response": {
         "error": "order not found"
       }
@@ -1242,9 +1326,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
+        "orderId": "0f3e580a-9539-4625-8437-3918b1a32a00",
         "filledQuantity": 1,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 29000,
@@ -1255,12 +1339,12 @@
           {
             "price": 30000,
             "quantity": 1,
-            "timestamp": 1779151241235,
-            "makerOrderId": "cba0165c-6118-4cce-8b6e-c8a353427508",
-            "takerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a"
+            "timestamp": 1779151887249,
+            "makerOrderId": "242521db-415f-471a-b79d-dc32e848e252",
+            "takerOrderId": "0f3e580a-9539-4625-8437-3918b1a32a00"
           }
         ],
-        "timestamp": 1779151241235,
+        "timestamp": 1779151887249,
         "avgPrice": 30000
       }
     },
@@ -1272,9 +1356,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+        "orderId": "d39ed078-8c10-4ce3-8d2a-a9e2e6e12722",
         "filledQuantity": 1,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 30000,
@@ -1285,26 +1369,27 @@
           {
             "price": 29000,
             "quantity": 1,
-            "timestamp": 1779151242286,
-            "makerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
-            "takerOrderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a"
+            "timestamp": 1779151888301,
+            "makerOrderId": "0f3e580a-9539-4625-8437-3918b1a32a00",
+            "takerOrderId": "d39ed078-8c10-4ce3-8d2a-a9e2e6e12722"
           }
         ],
-        "timestamp": 1779151242286,
+        "timestamp": 1779151888301,
         "avgPrice": 29000
       }
     },
     {
       "name": "GET /order – buy order status=FILLED, avgPrice=29000",
       "method": "GET",
-      "path": "F:/Git/order/e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+      "path": "F:/Git/order/d39ed078-8c10-4ce3-8d2a-a9e2e6e12722",
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 891,
       "response": {
-        "orderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+        "orderId": "d39ed078-8c10-4ce3-8d2a-a9e2e6e12722",
         "filledQuantity": 1,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 30000,
@@ -1315,12 +1400,12 @@
           {
             "price": 29000,
             "quantity": 1,
-            "timestamp": 1779151242286,
-            "makerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
-            "takerOrderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a"
+            "timestamp": 1779151888301,
+            "makerOrderId": "0f3e580a-9539-4625-8437-3918b1a32a00",
+            "takerOrderId": "d39ed078-8c10-4ce3-8d2a-a9e2e6e12722"
           }
         ],
-        "timestamp": 1779151242286,
+        "timestamp": 1779151888301,
         "avgPrice": 29000
       }
     },
@@ -1331,6 +1416,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 830,
       "response": {
         "bids": [],
         "asks": []
@@ -1343,6 +1429,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 847,
       "response": {
         "error": "order cannot be cancelled (status: FILLED)"
       }
@@ -1354,6 +1441,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 849,
       "response": {
         "error": "order cannot be cancelled (status: FILLED)"
       }
@@ -1365,6 +1453,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 852,
       "response": {
         "bids": [],
         "asks": []
@@ -1377,6 +1466,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 800,
       "response": {
         "BTC": 13,
         "USD": 401000,
@@ -1391,6 +1481,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 835,
       "response": {
         "BTC": 27,
         "USD": 289000
@@ -1403,10 +1494,11 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 1015,
       "response": {
-        "orderId": "9bd21c90-b726-4dee-a879-957264358748",
+        "orderId": "84419fec-ed9d-4726-b665-844399a99f0e",
         "filledQuantity": 1,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 1,
@@ -1417,12 +1509,12 @@
           {
             "price": 28000,
             "quantity": 1,
-            "timestamp": 1779151251782,
-            "makerOrderId": "5222ee7a-c70b-4442-a23d-a61b5f7326b7",
-            "takerOrderId": "9bd21c90-b726-4dee-a879-957264358748"
+            "timestamp": 1779151897768,
+            "makerOrderId": "9849600a-5942-42fd-a126-7fbb980aa627",
+            "takerOrderId": "84419fec-ed9d-4726-b665-844399a99f0e"
           }
         ],
-        "timestamp": 1779151251782,
+        "timestamp": 1779151897768,
         "avgPrice": 28000
       }
     },
@@ -1433,6 +1525,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 849,
       "response": {
         "error": "balance is less than amount to lock"
       }
@@ -1444,6 +1537,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 842,
       "response": {
         "error": "balance is less than amount to lock"
       }
@@ -1456,9 +1550,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "9245c43c-7172-4cd2-a278-1eaf9a96e52b",
+        "orderId": "8739611f-fe15-4663-a2f1-4008d221a00b",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 20000,
@@ -1466,7 +1560,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151254987,
+        "timestamp": 1779151900936,
         "avgPrice": 0
       }
     },
@@ -1477,6 +1571,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 1068,
       "response": {
         "bids": [
           {
@@ -1494,6 +1589,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 88,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -1506,6 +1602,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 77,
       "response": {
         "expected": "20000",
         "actual": "20000"
@@ -1518,6 +1615,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 87,
       "response": {
         "expected": "3",
         "actual": "3"
@@ -1530,6 +1628,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -1543,9 +1642,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "f1318e09-e090-4327-aebc-737b4a505731",
+        "orderId": "602fcc6a-e85a-44e1-bc12-999d40d4bfde",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 35000,
@@ -1553,7 +1652,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151258149,
+        "timestamp": 1779151904108,
         "avgPrice": 0
       }
     },
@@ -1564,6 +1663,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -1576,6 +1676,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "35000",
         "actual": "35000"
@@ -1588,6 +1689,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "2",
         "actual": "2"
@@ -1600,6 +1702,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 74,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -1612,6 +1715,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 77,
       "response": {
         "expected": "35000",
         "actual": "35000"
@@ -1624,6 +1728,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -1636,6 +1741,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 75,
       "response": {
         "expected": "329000",
         "actual": "329000"
@@ -1649,9 +1755,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "a7727539-3fad-4af8-9457-f379920c86b9",
+        "orderId": "c8f9e6f2-4d0c-48b0-9691-0f21acc7c5c8",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 22000,
@@ -1659,7 +1765,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151265554,
+        "timestamp": 1779151911548,
         "avgPrice": 0
       }
     },
@@ -1670,6 +1776,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 74,
       "response": {
         "expected": "CANCELLED",
         "actual": "CANCELLED"
@@ -1682,6 +1789,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 75,
       "response": {
         "expected": "373000",
         "actual": "373000"
@@ -1694,6 +1802,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "CANCELLED",
         "actual": "CANCELLED"
@@ -1706,6 +1815,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 86,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -1718,6 +1828,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 74,
       "response": {
         "expected": "26",
         "actual": "26"
@@ -1731,9 +1842,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "0babf51b-6969-4219-849e-2f1b3be87421",
+        "orderId": "79e0adec-3538-4587-b054-62b8087ef0de",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 40000,
@@ -1741,7 +1852,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151270847,
+        "timestamp": 1779151916832,
         "avgPrice": 0
       }
     },
@@ -1752,6 +1863,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 75,
       "response": {
         "expected": "PARTIALLY_CANCELLED",
         "actual": "PARTIALLY_CANCELLED"
@@ -1764,6 +1876,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -1777,9 +1890,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "bc65dbcc-0c73-49e0-8a48-0ace3f7c4d40",
+        "orderId": "d0f69133-2780-4adb-8873-9b3c1d47b6e8",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 27000,
@@ -1787,7 +1900,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151275079,
+        "timestamp": 1779151921048,
         "avgPrice": 0
       }
     },
@@ -1798,6 +1911,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -1810,6 +1924,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "expected": "order cannot be cancelled (status: FILLED)",
         "actual": "order cannot be cancelled (status: FILLED)"
@@ -1822,6 +1937,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 74,
       "response": {
         "expected": "order cannot be cancelled (status: CANCELLED)",
         "actual": "order cannot be cancelled (status: CANCELLED)"
@@ -1834,6 +1950,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "expected": "29000",
         "actual": "29000"
@@ -1846,6 +1963,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 112,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -1858,6 +1976,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -1870,6 +1989,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 97,
       "response": {
         "expected": "291000",
         "actual": "291000"
@@ -1883,9 +2003,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "50078622-463a-4b80-be1b-2c4d15e94ca9",
+        "orderId": "5e804bab-88be-4ab8-b853-2aea7c4bc82f",
         "filledQuantity": 1,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 31000,
@@ -1896,12 +2016,12 @@
           {
             "price": 29000,
             "quantity": 1,
-            "timestamp": 1779151285667,
-            "makerOrderId": "fcfa8046-b9b4-40d4-9bad-1f6c24481b6f",
-            "takerOrderId": "50078622-463a-4b80-be1b-2c4d15e94ca9"
+            "timestamp": 1779151931567,
+            "makerOrderId": "5c444fe1-3b68-4fa7-b7ae-fd9b95868c2a",
+            "takerOrderId": "5e804bab-88be-4ab8-b853-2aea7c4bc82f"
           }
         ],
-        "timestamp": 1779151285667,
+        "timestamp": 1779151931567,
         "avgPrice": 29000
       }
     },
@@ -1912,6 +2032,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "expected": "2",
         "actual": "2"
@@ -1924,6 +2045,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "expected": "24000",
         "actual": "24000"
@@ -1936,6 +2058,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 98,
       "response": {
         "expected": "3",
         "actual": "3"
@@ -1948,6 +2071,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 95,
       "response": {
         "expected": "23000",
         "actual": "23000"
@@ -1960,6 +2084,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -1972,6 +2097,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -1995,6 +2121,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -2007,6 +2134,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "expected": "32000",
         "actual": "32000"
@@ -2019,6 +2147,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 75,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -2031,6 +2160,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 76,
       "response": {
         "expected": "OPEN",
         "actual": "OPEN"
@@ -2043,6 +2173,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "expected": "25000",
         "actual": "25000"
@@ -2066,6 +2197,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -2078,6 +2210,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 80,
       "response": {
         "expected": "2",
         "actual": "2"
@@ -2090,6 +2223,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "expected": "2",
         "actual": "2"
@@ -2102,6 +2236,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "expected": "29000",
         "actual": "29000"
@@ -2115,9 +2250,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47",
+        "orderId": "b53ab01d-1055-40a5-a03e-3d217952379f",
         "filledQuantity": 2,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 1,
@@ -2128,19 +2263,19 @@
           {
             "price": 28000,
             "quantity": 1,
-            "timestamp": 1779151312061,
-            "makerOrderId": "efd5a86b-a167-4159-8c51-96376f8cebb0",
-            "takerOrderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47"
+            "timestamp": 1779151957937,
+            "makerOrderId": "01cf5f6a-688e-4805-baaa-2e9fe52da3f6",
+            "takerOrderId": "b53ab01d-1055-40a5-a03e-3d217952379f"
           },
           {
             "price": 30000,
             "quantity": 1,
-            "timestamp": 1779151312061,
-            "makerOrderId": "13d711e9-c8e5-4289-8791-261b08e1f962",
-            "takerOrderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47"
+            "timestamp": 1779151957937,
+            "makerOrderId": "105734e1-3881-4246-a5f8-1555b7b2d2d2",
+            "takerOrderId": "b53ab01d-1055-40a5-a03e-3d217952379f"
           }
         ],
-        "timestamp": 1779151312061,
+        "timestamp": 1779151957937,
         "avgPrice": 29000
       }
     },
@@ -2151,6 +2286,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 76,
       "response": {
         "expected": "CANCELLED",
         "actual": "CANCELLED"
@@ -2163,6 +2299,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -2175,6 +2312,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 95,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -2187,6 +2325,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "expected": "208000",
         "actual": "208000"
@@ -2200,9 +2339,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "ab0238c7-9f57-4f0d-888b-27876e8a0103",
+        "orderId": "596dbb70-361f-4f59-b794-0aba1baa1b57",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 1,
@@ -2210,7 +2349,7 @@
         "orderType": "market",
         "status": "CANCELLED",
         "fills": [],
-        "timestamp": 1779151315213,
+        "timestamp": 1779151961102,
         "avgPrice": 0
       }
     },
@@ -2221,6 +2360,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 75,
       "response": {
         "expected": "CANCELLED",
         "actual": "CANCELLED"
@@ -2233,6 +2373,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 85,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -2246,9 +2387,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "6f4d15a2-7163-4b23-947d-c428a7fc38dc",
+        "orderId": "693319f3-3f35-4b75-9966-e740b974a84d",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 1,
@@ -2256,7 +2397,7 @@
         "orderType": "market",
         "status": "CANCELLED",
         "fills": [],
-        "timestamp": 1779151318379,
+        "timestamp": 1779151964254,
         "avgPrice": 0
       }
     },
@@ -2267,6 +2408,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "PARTIALLY_CANCELLED",
         "actual": "PARTIALLY_CANCELLED"
@@ -2279,6 +2421,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 77,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -2291,6 +2434,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -2304,9 +2448,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "1f4ee3af-bd5d-459f-878e-135302bfe82d",
+        "orderId": "90b598cb-9e30-4945-b88e-178dd41880d4",
         "filledQuantity": 1,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "BTC_USD",
         "side": "buy",
         "price": 1,
@@ -2317,12 +2461,12 @@
           {
             "price": 27500,
             "quantity": 1,
-            "timestamp": 1779151320510,
-            "makerOrderId": "3e48ba22-009b-4c5f-9603-dce36336ed4c",
-            "takerOrderId": "1f4ee3af-bd5d-459f-878e-135302bfe82d"
+            "timestamp": 1779151966363,
+            "makerOrderId": "9bb34c5f-d1a4-446d-8286-c17b983f9d32",
+            "takerOrderId": "90b598cb-9e30-4945-b88e-178dd41880d4"
           }
         ],
-        "timestamp": 1779151320510,
+        "timestamp": 1779151966363,
         "avgPrice": 27500
       }
     },
@@ -2333,6 +2477,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 1054,
       "response": {
         "error": "balance is less than amount to lock"
       }
@@ -2344,6 +2489,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 77,
       "response": {
         "expected": "balance is less than amount to lock",
         "actual": "balance is less than amount to lock"
@@ -2356,6 +2502,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "expected": "balance is less than amount to lock",
         "actual": "balance is less than amount to lock"
@@ -2379,6 +2526,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 79,
       "response": {
         "expected": "insufficient quote balance for market buy",
         "actual": "insufficient quote balance for market buy"
@@ -2402,6 +2550,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 83,
       "response": {
         "expected": "OPEN",
         "actual": "OPEN"
@@ -2414,6 +2563,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 90,
       "response": {
         "expected": "0",
         "actual": "0"
@@ -2426,6 +2576,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 87,
       "response": {
         "expected": "PARTIALLY_FILLED",
         "actual": "PARTIALLY_FILLED"
@@ -2438,6 +2589,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 96,
       "response": {
         "expected": "1",
         "actual": "1"
@@ -2450,6 +2602,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -2462,6 +2615,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "3",
         "actual": "3"
@@ -2474,6 +2628,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 81,
       "response": {
         "expected": "2",
         "actual": "2"
@@ -2487,9 +2642,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "fb4a7a31-9ccf-48d5-9c11-467b361d0a5e",
+        "orderId": "f18b01de-29c4-457b-a7cb-5ecaa2a959b3",
         "filledQuantity": 0,
-        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "userId": "37f4c5bd-f4a2-4ede-b37b-af1b84fa64a8",
         "market": "BTC_USD",
         "side": "sell",
         "price": 26500,
@@ -2497,7 +2652,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151326884,
+        "timestamp": 1779151972679,
         "avgPrice": 0
       }
     },
@@ -2508,6 +2663,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 87,
       "response": {
         "expected": "true",
         "actual": "true"
@@ -2520,6 +2676,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 84,
       "response": {
         "expected": "0.05",
         "actual": "0.05"
@@ -2532,6 +2689,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 74,
       "response": {
         "expected": "FILLED",
         "actual": "FILLED"
@@ -2544,6 +2702,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 82,
       "response": {
         "expected": "0.05",
         "actual": "0.05"
@@ -2556,6 +2715,7 @@
       "expected_status": 0,
       "actual_status": 0,
       "passed": true,
+      "duration_ms": 78,
       "response": {
         "expected": "5",
         "actual": "5"
@@ -2569,9 +2729,9 @@
       "actual_status": 200,
       "passed": true,
       "response": {
-        "orderId": "067c4a80-dae8-4d71-bff7-d1884c219d75",
+        "orderId": "60afa93a-a281-43f1-b93c-a0e409a73433",
         "filledQuantity": 0,
-        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "userId": "5cb5fcbd-7f0a-4214-a086-f60a45ef803e",
         "market": "ETH_BTC",
         "side": "sell",
         "price": 0.05,
@@ -2579,7 +2739,7 @@
         "orderType": "limit",
         "status": "OPEN",
         "fills": [],
-        "timestamp": 1779151333206,
+        "timestamp": 1779151979000,
         "avgPrice": 0
       }
     },
@@ -2590,8 +2750,9 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 428,
       "response": {
-        "users": 35
+        "users": 39
       }
     },
     {
@@ -2601,6 +2762,7 @@
       "expected_status": 200,
       "actual_status": 200,
       "passed": true,
+      "duration_ms": 323,
       "response": {
         "error": "invalid market"
       }
