@@ -5,9 +5,12 @@ import type {
   Fill,
 } from "../types/exchange-store-types";
 import { randomUUID } from "crypto";
+import { balanceStore, BalanceStore } from "./balance-store";
 
-class ExchangeStore {
-  constructor() {
+class SpotExchangeStore {
+  // private balanceStore:BalanceStore
+  constructor(private balanceStore: BalanceStore) {
+    // this.balanceStore=balanceStore
     this.initializeOrderBooks();
   }
   private static readonly MARKETS = [
@@ -23,12 +26,10 @@ class ExchangeStore {
   private orderBooks = new Map<string, OrderBook>();
   private orders = new Map<string, Order>();
   // userId->asset->amount
-  private balance = new Map<string, Map<string, number>>();
-  private locked = new Map<string, Map<string, number>>();
   private initializeOrderBooks() {
     // a in arraay => a = index value in array
     // a of array => a = value in array
-    for (const market of ExchangeStore.MARKETS) {
+    for (const market of SpotExchangeStore.MARKETS) {
       // const key = market.split("_")[0]!;
       this.orderBooks.set(market, { bids: [], asks: [] });
     }
@@ -41,50 +42,7 @@ class ExchangeStore {
     // sare user id k liye sare assset k liye locked 0 set kr do
     console.log("initializeLocked called");
   }
-  private unlock(userId: string, asset: string, amount: number): void {
-    // is userId k balance m asset ka amount badha do
-    const currentLocked = this.locked.get(userId);
-    const currentBalance = this.balance.get(userId);
-    const currentLockedAmount = currentLocked?.get(asset) || 0;
-    if (currentLockedAmount < amount) {
-      throw new Error("locked balance is less than amount to unlock");
-    }
-    currentLocked?.set(asset, currentLockedAmount - amount);
-    currentBalance?.set(asset, (currentBalance.get(asset) || 0) + amount);
-    // is userId k locked m asset ka amount ghatado
-  }
-  private lock(userId: string, asset: string, amount: number): void {
-    // is userId k balance m asset ka amount badha do
-    const currentBalance = this.balance.get(userId);
-    let currentLocked = this.locked.get(userId);
-    const currentBalanceAmount = currentBalance?.get(asset) || 0;
-    if (currentBalanceAmount < amount) {
-      throw new Error("balance is less than amount to lock");
-    }
-    if (!currentLocked) {
-      this.locked.set(userId, new Map<string, number>());
-      currentLocked = this.locked.get(userId);
-    }
-    currentLocked?.set(asset, (currentLocked.get(asset) || 0) + amount);
-    currentBalance?.set(asset, currentBalanceAmount - amount);
-  }
-  private deductLocked(userId: string, asset: string, amount: number): void {
-    const m = this.locked.get(userId);
-    const currentLockedAmount = m?.get(asset) || 0;
-    if (currentLockedAmount < amount) {
-      throw new Error("locked balance is less than amount to deduct");
-    }
-    m?.set(asset, currentLockedAmount - amount);
-  }
-  private credit(userId: string, asset: string, amount: number): void {
-    let m = this.balance.get(userId);
-    if (!m) {
-      this.balance.set(userId, new Map<string, number>());
-      m = this.balance.get(userId);
-    }
-    const currentBalanceAmount = m?.get(asset) || 0;
-    m?.set(asset, currentBalanceAmount + amount);
-  }
+  
   //   Omit<Order, "orderId" | "filledQuantity"> means Order se ye do field hta do
   private checksForCreateOrder(
     input: Omit<
@@ -99,7 +57,7 @@ class ExchangeStore {
   ): void {
     // check if market is valid
     // TODO: switch MARKETS to a Set for O(1) lookup — currently O(n) per validation call
-    if (!ExchangeStore.MARKETS.includes(input.market)) {
+    if (!SpotExchangeStore.MARKETS.includes(input.market)) {
       throw new Error("invalid market");
     }
     // check if side is valid
@@ -143,7 +101,7 @@ class ExchangeStore {
         amountToLock = totalCost;
       } else {
         // but abhi k liye pura balance lock kr dete h, market order k liye hm assume kr lete h ki price limit order k price se jyada nhi jayega
-        const currentBalance = this.balance.get(input.userId)?.get(quote) || 0;
+        const currentBalance = this.balanceStore.getBalance(input.userId)?.get(quote) || 0;
         // this.lock(input.userId, quote, currentBalance);
         amountToLock = currentBalance;
         if (amountToLock <= 0) {
@@ -175,7 +133,7 @@ class ExchangeStore {
       timestamp: Date.now(),
       avgPrice: 0,
     };
-    this.lock(input.userId, asset, amountToLock);
+    this.balanceStore.lock(input.userId, asset, amountToLock);
     this.orders.set(orderId, order);
     const oppositeSide = input.side === "buy" ? "asks" : "bids";
     const ob = this.orderBooks.get(input.market) || { bids: [], asks: [] };
@@ -224,22 +182,22 @@ class ExchangeStore {
       if (input.side === "buy") {
         // buyer is taker and seller is maker
         // buyer k liye quote ka amount ghatana h and base ka amount badhana h
-        this.deductLocked(takerUserId, quote, fillPrice * fill.quantity);
-        this.credit(takerUserId, base, fill.quantity);
-        this.deductLocked(makerUserId, base, fill.quantity);
-        this.credit(makerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.deductLocked(takerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.credit(takerUserId, base, fill.quantity);
+        this.balanceStore.deductLocked(makerUserId, base, fill.quantity);
+        this.balanceStore.credit(makerUserId, quote, fillPrice * fill.quantity);
       } else {
         // seller is taker and buyer is maker
-        this.deductLocked(takerUserId, base, fill.quantity);
-        this.credit(takerUserId, quote, fillPrice * fill.quantity);
-        this.deductLocked(makerUserId, quote, fillPrice * fill.quantity);
-        this.credit(makerUserId, base, fill.quantity);
+        this.balanceStore.deductLocked(takerUserId, base, fill.quantity);
+        this.balanceStore.credit(takerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.deductLocked(makerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.credit(makerUserId, base, fill.quantity);
       }
       if (input.orderType === "limit") {
         // unlock the delta of price-fill.price for filled quantity
         if (input.side === "buy") {
           const deltaToUnlock = (input.price - fillPrice) * fill.quantity;
-          this.unlock(takerUserId, quote, deltaToUnlock);
+          this.balanceStore.unlock(takerUserId, quote, deltaToUnlock);
         }
         // else m let say 10$ p 10qty bechna h to 10 ya 10 se upar m he bikega to kya delta isme
       }
@@ -266,7 +224,7 @@ class ExchangeStore {
           0,
         );
       if (amountToUnlock > 0) {
-        this.unlock(order.userId, quote, amountToUnlock);
+        this.balanceStore.unlock(order.userId, quote, amountToUnlock);
       }
     }
 
@@ -277,7 +235,7 @@ class ExchangeStore {
           order.status = "CANCELLED";
         }
         if (order.side === "sell") {
-          this.unlock(
+          this.balanceStore.unlock(
             order.userId,
             base,
             order.quantity - order.filledQuantity,
@@ -336,12 +294,12 @@ class ExchangeStore {
       const quote = order.market.split("_")[1]!;
       const amountToUnlock =
         (order.quantity - order.filledQuantity) * order.price;
-      this.unlock(order.userId, quote, amountToUnlock);
+      this.balanceStore.unlock(order.userId, quote, amountToUnlock);
     } else {
       // for sell order we have locked the asset which we need to refund
       const base = order.market.split("_")[0]!;
       const amountToUnlock = order.quantity - order.filledQuantity;
-      this.unlock(order.userId, base, amountToUnlock);
+      this.balanceStore.unlock(order.userId, base, amountToUnlock);
     }
     return order;
   }
@@ -357,7 +315,7 @@ class ExchangeStore {
   getDepth(market: string): Depth {
     // ISME AGGREGATE KR RHE H AND THIS WILL BE accessed very more number of times compared to createOrder and cancelOrder(which will affect this)
     // so this can be optimized by storing aggregated order book and updating it on every createOrder and cancelOrder
-    if (!ExchangeStore.MARKETS.includes(market)) {
+    if (!SpotExchangeStore.MARKETS.includes(market)) {
       throw new Error("invalid market");
     }
     const m = this.orderBooks.get(market);
@@ -393,24 +351,19 @@ class ExchangeStore {
   }
 
   getUserBalance(userId: string): unknown {
-    const m = this.balance.get(userId);
-    if (!m) {
-      return {};
-    }
+    const m = this.balanceStore.getBalance(userId);
     // return m;  as map is not serializable(bcoz => ) we need to convert it to object
     return Object.fromEntries(m);
   }
   deposit(userId: string, asset: string, amount: number): unknown {
-    if (!ExchangeStore.ASSETS.has(asset)) {
+    if (!SpotExchangeStore.ASSETS.has(asset)) {
       throw new Error("invalid asset");
     }
-    const currentBalance =
-      this.balance.get(userId) || new Map<string, number>();
-    currentBalance.set(asset, (currentBalance.get(asset) || 0) + amount);
-    this.balance.set(userId, currentBalance);
-    if (!this.locked.get(userId)) {
-      this.locked.set(userId, new Map<string, number>());
-    }
+    // const currentBalance =this.balanceStore.getBalance(userId);
+      // balanceStore.getBalance(userId) || new Map<string, number>();
+    // currentBalance.set(asset, (currentBalance.get(asset) || 0) + amount);
+    // this.balance.set(userId, currentBalance);
+    this.balanceStore.credit(userId,asset,amount);
     return this.getUserBalance(userId);
   }
 }
@@ -419,4 +372,4 @@ class ExchangeStore {
 //  aur kisi andar ksii ko bhi declare kiya hua h usko use kr skte h
 // aur :lga k type inteface union array funciton type , primitive type , custom type lga skte h
 
-export const exchangeStore = new ExchangeStore();
+export const spotExchangeStore = new SpotExchangeStore(balanceStore);

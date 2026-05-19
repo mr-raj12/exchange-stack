@@ -1,5 +1,5 @@
 import type { cancelOrderRequest, EngineRequest, createOrderRequest, getDepthRequest, getOrderRequest, getUserBalanceRequest, depositRequest } from "./types/messages";
-import { exchangeStore } from "./store/exchange-store";
+import { exchangeStore } from "./store/spot-exchange-store";
 
 
 export function handleEngineRequest(request: EngineRequest): unknown {
