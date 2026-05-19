@@ -1,11 +1,11 @@
 import {z} from "zod";
 
 export const createOrderSchema = z.object({
-    symbol: z.string().min(1),
+    market: z.string().min(1),
     side: z.enum(["buy","sell"]),
     price: z.number().positive(),
-    qty: z.number().positive(),
-    type: z.enum(["limit","market"]).default("limit")
+    quantity: z.number().positive(),
+    orderType: z.enum(["limit","market"]).default("limit")
 });
 
 export const cancelOrderSchema = z.object({

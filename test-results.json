@@ -1,0 +1,2609 @@
+{
+  "run_at": "2026-05-19T00:39:59Z",
+  "base_url": "http://localhost:3000",
+  "summary": {
+    "total": 174,
+    "pass": 174,
+    "fail": 0,
+    "pass_rate": 100
+  },
+  "tests": [
+    {
+      "name": "GET /health returns ok:true",
+      "method": "GET",
+      "path": "F:/Git/health",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "ok": true
+      }
+    },
+    {
+      "name": "POST /signup – valid user A",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNjUxOGI4OC1kNzc3LTQyZDItOTFiOC1lNGNmMzc5ODY4MDkiLCJpYXQiOjE3NzkxNTEyMDAsImV4cCI6MTc3OTc1NjAwMH0.O8_pCbPLsBnnB2Zd9w7ttM_tbGROvMsBaKbdVf4-0tE",
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "username": "buyer_1779151199"
+      }
+    },
+    {
+      "name": "POST /signup – valid user B",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMjg5YzY0NC05Zjc1LTRmNTEtOGM0NS01MzQwN2U1NWNlNjQiLCJpYXQiOjE3NzkxNTEyMDAsImV4cCI6MTc3OTc1NjAwMH0.NHM3rR8EBVlsouajlLIUNEMjQAAcc_pwTRLypSgVgEs",
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "username": "seller_1779151199"
+      }
+    },
+    {
+      "name": "POST /signup – duplicate username → 409",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 409,
+      "actual_status": 409,
+      "passed": true,
+      "response": {
+        "error": "username already exists",
+        "err": {
+          "code": "P2002",
+          "meta": {
+            "modelName": "User",
+            "driverAdapterError": {
+              "name": "DriverAdapterError",
+              "cause": {
+                "originalCode": "23505",
+                "originalMessage": "duplicate key value violates unique constraint \"User_username_key\"",
+                "kind": "UniqueConstraintViolation",
+                "constraint": {
+                  "fields": [
+                    "username"
+                  ]
+                }
+              }
+            }
+          },
+          "clientVersion": "7.8.0",
+          "name": "PrismaClientKnownRequestError"
+        }
+      }
+    },
+    {
+      "name": "POST /signup – username too short (<3) → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Too small: expected string to have >=3 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signup – username too long (>32) → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Too big: expected string to have <=32 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signup – password too short (<6) → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Too small: expected string to have >=6 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signup – missing username → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signup – missing password → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signup – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signin – valid credentials user A",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNjUxOGI4OC1kNzc3LTQyZDItOTFiOC1lNGNmMzc5ODY4MDkiLCJpYXQiOjE3NzkxNTEyMDMsImV4cCI6MTc3OTc1NjAwM30.VKh9_mDidzDUUZKtR9LPCENDYRypcEKZDXhW6yfvcBQ",
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "username": "buyer_1779151199"
+      }
+    },
+    {
+      "name": "POST /signin – valid credentials user B",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMjg5YzY0NC05Zjc1LTRmNTEtOGM0NS01MzQwN2U1NWNlNjQiLCJpYXQiOjE3NzkxNTEyMDMsImV4cCI6MTc3OTc1NjAwM30.JXNQ8KiasEXTJj6YbbekiQZasEOFV9hFksZL25CAVuM",
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "username": "seller_1779151199"
+      }
+    },
+    {
+      "name": "POST /signin – wrong password → 401",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "wrong password please check and retry"
+      }
+    },
+    {
+      "name": "POST /signin – nonexistent user → 404",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 404,
+      "actual_status": 404,
+      "passed": true,
+      "response": {
+        "error": "user does not exists!"
+      }
+    },
+    {
+      "name": "POST /signin – password too short (zod) → 400",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Too small: expected string to have >=6 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signin – missing username → 400",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signin – missing password → 400",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /signin – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "username"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "password"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GET /balance – no Authorization header → 401",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /balance – wrong scheme (NotBearer) → 401",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /balance – malformed token (no payload) → 401",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "invalid or expired token!"
+      }
+    },
+    {
+      "name": "GET /balance – expired/tampered token → 401",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "invalid or expired token!"
+      }
+    },
+    {
+      "name": "GET /balance – valid token, fresh user → 200",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {}
+    },
+    {
+      "name": "POST /deposit – no auth → 401",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "POST /deposit – valid BTC user A",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 10
+      }
+    },
+    {
+      "name": "POST /deposit – valid USD user A",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 10,
+        "USD": 500000
+      }
+    },
+    {
+      "name": "POST /deposit – valid ETH user A",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 10,
+        "USD": 500000,
+        "ETH": 50
+      }
+    },
+    {
+      "name": "POST /deposit – valid SOL user A",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 10,
+        "USD": 500000,
+        "ETH": 50,
+        "SOL": 1000
+      }
+    },
+    {
+      "name": "POST /deposit – valid BTC user B",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 30
+      }
+    },
+    {
+      "name": "POST /deposit – valid USD user B",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 30,
+        "USD": 200000
+      }
+    },
+    {
+      "name": "POST /deposit – invalid asset DOGE → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset"
+      }
+    },
+    {
+      "name": "POST /deposit – lowercase asset btc → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset"
+      }
+    },
+    {
+      "name": "POST /deposit – empty asset string → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset"
+      }
+    },
+    {
+      "name": "POST /deposit – zero amount → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "amount must be positive"
+      }
+    },
+    {
+      "name": "POST /deposit – negative amount → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "amount must be positive"
+      }
+    },
+    {
+      "name": "POST /deposit – string amount → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset or amount"
+      }
+    },
+    {
+      "name": "POST /deposit – null amount → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset or amount"
+      }
+    },
+    {
+      "name": "POST /deposit – missing asset → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset or amount"
+      }
+    },
+    {
+      "name": "POST /deposit – missing amount → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset or amount"
+      }
+    },
+    {
+      "name": "POST /deposit – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/deposit",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid asset or amount"
+      }
+    },
+    {
+      "name": "GET /balance – user A has funded balance",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 10,
+        "USD": 500000,
+        "ETH": 50,
+        "SOL": 1000
+      }
+    },
+    {
+      "name": "GET /balance – user B has funded balance",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 30,
+        "USD": 200000
+      }
+    },
+    {
+      "name": "GET /depth/BTC_USD – valid market (empty book)",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "GET /depth/ETH_USD – valid market",
+      "method": "GET",
+      "path": "F:/Git/depth/ETH_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "GET /depth/ETH_BTC – valid market",
+      "method": "GET",
+      "path": "F:/Git/depth/ETH_BTC",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "GET /depth/BTC_SOL – valid market",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_SOL",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "GET /depth/INVALID – unknown market → 400",
+      "method": "GET",
+      "path": "F:/Git/depth/INVALID",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid market"
+      }
+    },
+    {
+      "name": "GET /depth/BTC_USDT – not in engine MARKETS → 400",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_USDT",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid market"
+      }
+    },
+    {
+      "name": "GET /depth/btc_usd – lowercase (not in MARKETS) → 400",
+      "method": "GET",
+      "path": "F:/Git/depth/btc_usd",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid market"
+      }
+    },
+    {
+      "name": "GET /depth/BTC – single segment → 400",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid market"
+      }
+    },
+    {
+      "name": "POST /order – no auth → 401",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "POST /order/cancel – no auth → 401",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /order/some-id – no auth → 401",
+      "method": "GET",
+      "path": "F:/Git/order/some-id",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "POST /order – missing symbol → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – empty symbol → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – invalid side 'hold' → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – missing side → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – negative price → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – zero price → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – string price → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Invalid input: expected number, received string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – negative qty → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – zero qty → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – invalid type 'stop' → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderType"
+            ],
+            "message": "Invalid option: expected one of \"limit\"|\"market\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – missing qty → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          },
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          },
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order/cancel – missing market → 400",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order/cancel – empty market → 400",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order/cancel – missing orderId → 400",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order/cancel – empty orderId → 400",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order/cancel – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /order – limit buy BTC_USD (HTTP 200; body may have error)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "6be3b174-2799-456c-b3c9-5fe427c4ea1e",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 30000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151232766,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "POST /order – limit sell BTC_USD",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "8a28087d-2810-4835-9e88-eaab372f7e89",
+        "filledQuantity": 1,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 30000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 30000,
+            "quantity": 1,
+            "timestamp": 1779151233853,
+            "makerOrderId": "6be3b174-2799-456c-b3c9-5fe427c4ea1e",
+            "takerOrderId": "8a28087d-2810-4835-9e88-eaab372f7e89"
+          }
+        ],
+        "timestamp": 1779151233853,
+        "avgPrice": 30000
+      }
+    },
+    {
+      "name": "POST /order – market buy",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "29d14ff2-3891-4218-806b-72804e01e13f",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "status": "CANCELLED",
+        "fills": [],
+        "timestamp": 1779151234905,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "POST /order – market sell",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "fa38b7c5-78f6-463f-a746-6671245aef64",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "status": "CANCELLED",
+        "fills": [],
+        "timestamp": 1779151235967,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "POST /order – type defaults to limit (omit type)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "cba0165c-6118-4cce-8b6e-c8a353427508",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 30000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151237023,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "POST /order – ETH_USD pair",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "97b949b7-0909-4aeb-b257-2a33247c0d1a",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "ETH_USD",
+        "side": "buy",
+        "price": 2000,
+        "quantity": 5,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151238076,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "GET /order/:id – nonexistent UUID → HTTP 200 + engine error",
+      "method": "GET",
+      "path": "F:/Git/order/00000000-0000-0000-0000-000000000000",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "order not found"
+      }
+    },
+    {
+      "name": "POST /order/cancel – nonexistent orderId → HTTP 200 + engine error",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "order not found"
+      }
+    },
+    {
+      "name": "Limit sell placed (user B)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
+        "filledQuantity": 1,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 29000,
+        "quantity": 2,
+        "orderType": "limit",
+        "status": "PARTIALLY_FILLED",
+        "fills": [
+          {
+            "price": 30000,
+            "quantity": 1,
+            "timestamp": 1779151241235,
+            "makerOrderId": "cba0165c-6118-4cce-8b6e-c8a353427508",
+            "takerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a"
+          }
+        ],
+        "timestamp": 1779151241235,
+        "avgPrice": 30000
+      }
+    },
+    {
+      "name": "Crossing limit buy (user A)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+        "filledQuantity": 1,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 30000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 29000,
+            "quantity": 1,
+            "timestamp": 1779151242286,
+            "makerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
+            "takerOrderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a"
+          }
+        ],
+        "timestamp": 1779151242286,
+        "avgPrice": 29000
+      }
+    },
+    {
+      "name": "GET /order – buy order status=FILLED, avgPrice=29000",
+      "method": "GET",
+      "path": "F:/Git/order/e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a",
+        "filledQuantity": 1,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 30000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 29000,
+            "quantity": 1,
+            "timestamp": 1779151242286,
+            "makerOrderId": "83cdcc27-594a-4f89-adf8-3b193846687a",
+            "takerOrderId": "e1f455f5-156e-48a0-ae1c-d7d10b6dab5a"
+          }
+        ],
+        "timestamp": 1779151242286,
+        "avgPrice": 29000
+      }
+    },
+    {
+      "name": "GET /depth/BTC_USD – 1 remaining ask after partial fill",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "POST /order/cancel – cancel partial ask (user B)",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "order cannot be cancelled (status: FILLED)"
+      }
+    },
+    {
+      "name": "POST /order/cancel – re-cancel (engine error in body)",
+      "method": "POST",
+      "path": "F:/Git/order/cancel",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "order cannot be cancelled (status: FILLED)"
+      }
+    },
+    {
+      "name": "GET /depth/BTC_USD – empty after cancel",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "GET /balance – user A after buy trade",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 13,
+        "USD": 401000,
+        "ETH": 50,
+        "SOL": 1000
+      }
+    },
+    {
+      "name": "GET /balance – user B after sell trade",
+      "method": "GET",
+      "path": "F:/Git/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "BTC": 27,
+        "USD": 289000
+      }
+    },
+    {
+      "name": "POST /order – market buy hits resting sell at $28k",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "9bd21c90-b726-4dee-a879-957264358748",
+        "filledQuantity": 1,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 28000,
+            "quantity": 1,
+            "timestamp": 1779151251782,
+            "makerOrderId": "5222ee7a-c70b-4442-a23d-a61b5f7326b7",
+            "takerOrderId": "9bd21c90-b726-4dee-a879-957264358748"
+          }
+        ],
+        "timestamp": 1779151251782,
+        "avgPrice": 28000
+      }
+    },
+    {
+      "name": "POST /order – market sell with empty bid book → CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "POST /order – limit buy beyond balance → engine error (HTTP 200)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "Resting bid placed (3 BTC @ $20k)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "9245c43c-7172-4cd2-a278-1eaf9a96e52b",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 20000,
+        "quantity": 3,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151254987,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "GET /depth/BTC_USD – has bids after resting bid",
+      "method": "GET",
+      "path": "F:/Git/depth/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "bids": [
+          {
+            "price": 20000,
+            "count": 3
+          }
+        ],
+        "asks": []
+      }
+    },
+    {
+      "name": "Depth bids not empty",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Best bid price = 20000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "20000",
+        "actual": "20000"
+      }
+    },
+    {
+      "name": "Best bid count = 3",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "3",
+        "actual": "3"
+      }
+    },
+    {
+      "name": "Asks empty (no sells)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Resting ask placed (2 BTC @ $35k)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "f1318e09-e090-4327-aebc-737b4a505731",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 35000,
+        "quantity": 2,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151258149,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Depth has both sides",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Best ask price = 35000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "35000",
+        "actual": "35000"
+      }
+    },
+    {
+      "name": "Best ask count = 2",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "Depth bids empty after cancel",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Depth asks unchanged after bid cancel",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "35000",
+        "actual": "35000"
+      }
+    },
+    {
+      "name": "Depth fully empty after both cancels",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "USD locked: balance decreased by 22000*2=44000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "329000",
+        "actual": "329000"
+      }
+    },
+    {
+      "name": "Limit buy placed to test locking",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "a7727539-3fad-4af8-9457-f379920c86b9",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 22000,
+        "quantity": 2,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151265554,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Cancelled OPEN order status=CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "USD fully restored after cancel",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "373000",
+        "actual": "373000"
+      }
+    },
+    {
+      "name": "Cancel OPEN sell → status=CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Cancel OPEN sell → filledQuantity=0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "BTC fully refunded after cancel-open-sell",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "26",
+        "actual": "26"
+      }
+    },
+    {
+      "name": "Resting limit sell for cancel test",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "0babf51b-6969-4219-849e-2f1b3be87421",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 40000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151270847,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Cancel PARTIALLY_FILLED → status=PARTIALLY_CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "PARTIALLY_CANCELLED",
+        "actual": "PARTIALLY_CANCELLED"
+      }
+    },
+    {
+      "name": "Cancel PARTIALLY_FILLED → filledQuantity=1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Partial-fill sell for cancel test",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "bc65dbcc-0c73-49e0-8a48-0ace3f7c4d40",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 27000,
+        "quantity": 2,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151275079,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Sell order is now FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Cancel FILLED → engine error message",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "order cannot be cancelled (status: FILLED)",
+        "actual": "order cannot be cancelled (status: FILLED)"
+      }
+    },
+    {
+      "name": "Cancel CANCELLED → engine error message",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "order cannot be cancelled (status: CANCELLED)",
+        "actual": "order cannot be cancelled (status: CANCELLED)"
+      }
+    },
+    {
+      "name": "Over-lock: buy fills at maker price $29k",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "29000",
+        "actual": "29000"
+      }
+    },
+    {
+      "name": "Over-lock: buy status=FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Over-lock: buy has 1 fill",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Over-lock: USD deducted = fill price $29k not limit $31k",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "291000",
+        "actual": "291000"
+      }
+    },
+    {
+      "name": "Over-lock buy (limit=$31k fills at $29k)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "50078622-463a-4b80-be1b-2c4d15e94ca9",
+        "filledQuantity": 1,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 31000,
+        "quantity": 1,
+        "orderType": "limit",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 29000,
+            "quantity": 1,
+            "timestamp": 1779151285667,
+            "makerOrderId": "fcfa8046-b9b4-40d4-9bad-1f6c24481b6f",
+            "takerOrderId": "50078622-463a-4b80-be1b-2c4d15e94ca9"
+          }
+        ],
+        "timestamp": 1779151285667,
+        "avgPrice": 29000
+      }
+    },
+    {
+      "name": "Aggregation: exactly 2 bid price levels",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "Aggregation: best bid price=24000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "24000",
+        "actual": "24000"
+      }
+    },
+    {
+      "name": "Aggregation: best bid count=3 (1+2)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "3",
+        "actual": "3"
+      }
+    },
+    {
+      "name": "Aggregation: second bid price=23000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "23000",
+        "actual": "23000"
+      }
+    },
+    {
+      "name": "Aggregation: second bid count=1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Bids ordered high→low (bids[0]>bids[1])",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "3 bids for aggregation test",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "agg1_placed": true
+      }
+    },
+    {
+      "name": "Asks ordered low→high (asks[0]<asks[1])",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Best ask (lowest) = 32000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "32000",
+        "actual": "32000"
+      }
+    },
+    {
+      "name": "Price-time: earlier bid (BUY1) is FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Price-time: later bid (BUY2) is still OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "Price-time: BUY1 fill price = 25000 (maker bid price)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "25000",
+        "actual": "25000"
+      }
+    },
+    {
+      "name": "Price-time priority test",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "note": "earlier order fills first"
+      }
+    },
+    {
+      "name": "avgPrice test: status=FILLED (2 fills)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "avgPrice test: filledQuantity=2",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "avgPrice test: 2 fills recorded",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "avgPrice test: weighted avg = (28000+30000)/2=29000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "29000",
+        "actual": "29000"
+      }
+    },
+    {
+      "name": "avgPrice: market buy across 2 asks",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47",
+        "filledQuantity": 2,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 1,
+        "quantity": 2,
+        "orderType": "market",
+        "status": "FILLED",
+        "fills": [
+          {
+            "price": 28000,
+            "quantity": 1,
+            "timestamp": 1779151312061,
+            "makerOrderId": "efd5a86b-a167-4159-8c51-96376f8cebb0",
+            "takerOrderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47"
+          },
+          {
+            "price": 30000,
+            "quantity": 1,
+            "timestamp": 1779151312061,
+            "makerOrderId": "13d711e9-c8e5-4289-8791-261b08e1f962",
+            "takerOrderId": "ffe6cb8b-6986-4c4f-aef6-11f06da09e47"
+          }
+        ],
+        "timestamp": 1779151312061,
+        "avgPrice": 29000
+      }
+    },
+    {
+      "name": "Market buy empty book: status=CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Market buy empty book: filledQuantity=0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Market buy empty book: fills=[]",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Market buy empty book: USD balance unchanged (no funds consumed)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "208000",
+        "actual": "208000"
+      }
+    },
+    {
+      "name": "Market buy empty book → CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "ab0238c7-9f57-4f0d-888b-27876e8a0103",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "status": "CANCELLED",
+        "fills": [],
+        "timestamp": 1779151315213,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Market sell empty book: status=CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Market sell empty book: filledQuantity=0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Market sell empty book → CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "6f4d15a2-7163-4b23-947d-c428a7fc38dc",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "status": "CANCELLED",
+        "fills": [],
+        "timestamp": 1779151318379,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "Market buy partial: status=PARTIALLY_CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "PARTIALLY_CANCELLED",
+        "actual": "PARTIALLY_CANCELLED"
+      }
+    },
+    {
+      "name": "Market buy partial: filledQuantity=1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Market buy partial: 1 fill recorded",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Market buy partial fill → PARTIALLY_CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "1f4ee3af-bd5d-459f-878e-135302bfe82d",
+        "filledQuantity": 1,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 1,
+        "quantity": 3,
+        "orderType": "market",
+        "status": "PARTIALLY_CANCELLED",
+        "fills": [
+          {
+            "price": 27500,
+            "quantity": 1,
+            "timestamp": 1779151320510,
+            "makerOrderId": "3e48ba22-009b-4c5f-9603-dce36336ed4c",
+            "takerOrderId": "1f4ee3af-bd5d-459f-878e-135302bfe82d"
+          }
+        ],
+        "timestamp": 1779151320510,
+        "avgPrice": 27500
+      }
+    },
+    {
+      "name": "POST /order – limit buy far beyond USD balance → HTTP 200 + engine error",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "Limit buy beyond balance: response has error key",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "balance is less than amount to lock",
+        "actual": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "Limit sell beyond base balance: error key present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "balance is less than amount to lock",
+        "actual": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "Limit sell beyond BTC balance → engine error",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "balance is less than amount to lock"
+      }
+    },
+    {
+      "name": "Market buy zero balance: error key present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "insufficient quote balance for market buy",
+        "actual": "insufficient quote balance for market buy"
+      }
+    },
+    {
+      "name": "Market buy with 0 USD → engine error",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "insufficient quote balance for market buy"
+      }
+    },
+    {
+      "name": "Status transition: new order is OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "Status transition: filledQuantity starts at 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Status transition: after 1-of-3 fill → PARTIALLY_FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "PARTIALLY_FILLED",
+        "actual": "PARTIALLY_FILLED"
+      }
+    },
+    {
+      "name": "Status transition: filledQuantity=1 after partial",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Status transition: after full fill → FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Status transition: filledQuantity=3 when fully filled",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "3",
+        "actual": "3"
+      }
+    },
+    {
+      "name": "Status transition: 2 fill records in fills array (1 per matching order)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "Status transition test (OPEN→PARTIALLY_FILLED→FILLED)",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "fb4a7a31-9ccf-48d5-9c11-467b361d0a5e",
+        "filledQuantity": 0,
+        "userId": "3289c644-9f75-4f51-8c45-53407e55ce64",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 26500,
+        "quantity": 3,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151326884,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "ETH_BTC depth has ask",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "ETH_BTC ask price = 0.05",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0.05",
+        "actual": "0.05"
+      }
+    },
+    {
+      "name": "ETH_BTC crossing buy: FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "ETH_BTC crossing buy: fill price=0.05 (maker)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "0.05",
+        "actual": "0.05"
+      }
+    },
+    {
+      "name": "ETH_BTC crossing buy: filledQty=5",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "expected": "5",
+        "actual": "5"
+      }
+    },
+    {
+      "name": "ETH_BTC cross-asset pair trade",
+      "method": "POST",
+      "path": "F:/Git/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "orderId": "067c4a80-dae8-4d71-bff7-d1884c219d75",
+        "filledQuantity": 0,
+        "userId": "f6518b88-d777-42d2-91b8-e4cf37986809",
+        "market": "ETH_BTC",
+        "side": "sell",
+        "price": 0.05,
+        "quantity": 10,
+        "orderType": "limit",
+        "status": "OPEN",
+        "fills": [],
+        "timestamp": 1779151333206,
+        "avgPrice": 0
+      }
+    },
+    {
+      "name": "GET /db-check – returns user count",
+      "method": "GET",
+      "path": "F:/Git/db-check",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "users": 35
+      }
+    },
+    {
+      "name": "GET /debug/ping-engine – engine reachable",
+      "method": "GET",
+      "path": "F:/Git/debug/ping-engine",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "invalid market"
+      }
+    }
+  ]
+}
