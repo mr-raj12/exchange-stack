@@ -1,8 +1,8 @@
+import type { Depth, Fill } from "../types/common-types";
 import type {
-  Depth,
-  Fill,
-} from "../types/common-types";
-import type { SpotOrder, SpotOrderBook } from "../types/spot-exchange-store-types";
+  SpotOrder,
+  SpotOrderBook,
+} from "../types/spot-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 
@@ -10,38 +10,30 @@ class SpotExchangeStore {
   // private balanceStore:BalanceStore
   constructor(private balanceStore: BalanceStore) {
     // this.balanceStore=balanceStore
-    this.initializeOrderBooks();
+    this.initializeSpotOrderBooks();
   }
-  private static readonly MARKETS = [
+  private static readonly SPOT_MARKETS = [
     "BTC_USD",
     "ETH_USD",
-    "ETH_BTC",
-    "BTC_SOL",
+    // "ETH_BTC",
+    // "BTC_SOL",
   ];
-  private static readonly ASSETS = new Set<string>(
-    this.MARKETS.flatMap((m) => m.split("_")),
+  private static readonly SPOT_ASSETS = new Set<string>(
+    this.SPOT_MARKETS.flatMap((m) => m.split("_")),
   );
 
-  private orderBooks = new Map<string, SpotOrderBook>();
-  private orders = new Map<string, SpotOrder>();
+  private spotOrderBooks = new Map<string, SpotOrderBook>();
+  private spotOrders = new Map<string, SpotOrder>();
   // userId->asset->amount
-  private initializeOrderBooks() {
+  private initializeSpotOrderBooks() {
     // a in arraay => a = index value in array
     // a of array => a = value in array
-    for (const market of SpotExchangeStore.MARKETS) {
-      // const key = market.split("_")[0]!;
-      this.orderBooks.set(market, { bids: [], asks: [] });
+    for (const market of SpotExchangeStore.SPOT_MARKETS) {
+      const key = market.split("_")[0]!;
+      this.spotOrderBooks.set(key, { bids: [], asks: [] });
     }
   }
-  private initializeBalance(): void {
-    // sare user id k liye sare assset k liye balance 0 set kr do
-    console.log("initializeBalance called");
-  }
-  private initializeLocked(): void {
-    // sare user id k liye sare assset k liye locked 0 set kr do
-    console.log("initializeLocked called");
-  }
-  
+
   //   Omit<Order, "orderId" | "filledQuantity"> means Order se ye do field hta do
   private checksForCreateOrder(
     input: Omit<
@@ -56,7 +48,7 @@ class SpotExchangeStore {
   ): void {
     // check if market is valid
     // TODO: switch MARKETS to a Set for O(1) lookup — currently O(n) per validation call
-    if (!SpotExchangeStore.MARKETS.includes(input.market)) {
+    if (!SpotExchangeStore.SPOT_MARKETS.includes(input.market)) {
       throw new Error("invalid market");
     }
     // check if side is valid
@@ -100,7 +92,8 @@ class SpotExchangeStore {
         amountToLock = totalCost;
       } else {
         // but abhi k liye pura balance lock kr dete h, market order k liye hm assume kr lete h ki price limit order k price se jyada nhi jayega
-        const currentBalance = this.balanceStore.getBalance(input.userId)?.get(quote) || 0;
+        const currentBalance =
+          this.balanceStore.getBalance(input.userId)?.get(quote) || 0;
         // this.lock(input.userId, quote, currentBalance);
         amountToLock = currentBalance;
         if (amountToLock <= 0) {
@@ -120,7 +113,7 @@ class SpotExchangeStore {
     }
 
     let orderId = randomUUID();
-    while (this.orders.has(orderId)) {
+    while (this.spotOrderBooks.has(orderId)) {
       orderId = randomUUID();
     }
     const order: SpotOrder = {
@@ -133,9 +126,9 @@ class SpotExchangeStore {
       avgPrice: 0,
     };
     this.balanceStore.lock(input.userId, asset, amountToLock);
-    this.orders.set(orderId, order);
+    this.spotOrders.set(orderId, order);
     const oppositeSide = input.side === "buy" ? "asks" : "bids";
-    const ob = this.orderBooks.get(input.market) || { bids: [], asks: [] };
+    const ob = this.spotOrderBooks.get(input.market) || { bids: [], asks: [] };
     const toIterate = ob[oppositeSide];
     while (order.filledQuantity < order.quantity && toIterate.length > 0) {
       // priority, record fills, handle partial fills, support limit
@@ -181,7 +174,11 @@ class SpotExchangeStore {
       if (input.side === "buy") {
         // buyer is taker and seller is maker
         // buyer k liye quote ka amount ghatana h and base ka amount badhana h
-        this.balanceStore.deductLocked(takerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.deductLocked(
+          takerUserId,
+          quote,
+          fillPrice * fill.quantity,
+        );
         this.balanceStore.credit(takerUserId, base, fill.quantity);
         this.balanceStore.deductLocked(makerUserId, base, fill.quantity);
         this.balanceStore.credit(makerUserId, quote, fillPrice * fill.quantity);
@@ -189,7 +186,11 @@ class SpotExchangeStore {
         // seller is taker and buyer is maker
         this.balanceStore.deductLocked(takerUserId, base, fill.quantity);
         this.balanceStore.credit(takerUserId, quote, fillPrice * fill.quantity);
-        this.balanceStore.deductLocked(makerUserId, quote, fillPrice * fill.quantity);
+        this.balanceStore.deductLocked(
+          makerUserId,
+          quote,
+          fillPrice * fill.quantity,
+        );
         this.balanceStore.credit(makerUserId, base, fill.quantity);
       }
       if (input.orderType === "limit") {
@@ -218,10 +219,7 @@ class SpotExchangeStore {
     if (order.orderType === "market" && order.side === "buy") {
       const amountToUnlock =
         amountToLock -
-        order.fills.reduce(
-          (acc, fill) => acc + fill.price * fill.quantity,
-          0,
-        );
+        order.fills.reduce((acc, fill) => acc + fill.price * fill.quantity, 0);
       if (amountToUnlock > 0) {
         this.balanceStore.unlock(order.userId, quote, amountToUnlock);
       }
@@ -263,17 +261,21 @@ class SpotExchangeStore {
     // 1213, 0.5, 30000
 
     // DO: remove the resting order from the book
-    const order = this.orders.get(orderId);
+    const order = this.spotOrders.get(orderId);
     if (!order) {
       throw new Error("order not found");
     }
-    if (order.status === "FILLED" || order.status === "CANCELLED" || order.status === "PARTIALLY_CANCELLED") {
+    if (
+      order.status === "FILLED" ||
+      order.status === "CANCELLED" ||
+      order.status === "PARTIALLY_CANCELLED"
+    ) {
       throw new Error(`order cannot be cancelled (status: ${order.status})`);
     }
     // orderbook k bids m price and count hoga
     const side = order.side;
     const inOrderBookSide = side === "buy" ? "bids" : "asks";
-    const ob = this.orderBooks.get(order.market);
+    const ob = this.spotOrderBooks.get(order.market);
     if (!ob) {
       throw new Error("market not found");
     }
@@ -304,7 +306,7 @@ class SpotExchangeStore {
   }
 
   getOrder(orderId: string): SpotOrder {
-    const m = this.orders.get(orderId);
+    const m = this.spotOrders.get(orderId);
     if (!m) {
       throw new Error("order not found");
     }
@@ -314,10 +316,10 @@ class SpotExchangeStore {
   getDepth(market: string): Depth {
     // ISME AGGREGATE KR RHE H AND THIS WILL BE accessed very more number of times compared to createOrder and cancelOrder(which will affect this)
     // so this can be optimized by storing aggregated order book and updating it on every createOrder and cancelOrder
-    if (!SpotExchangeStore.MARKETS.includes(market)) {
+    if (!SpotExchangeStore.SPOT_MARKETS.includes(market)) {
       throw new Error("invalid market");
     }
-    const m = this.orderBooks.get(market);
+    const m = this.spotOrderBooks.get(market);
     if (!m) {
       throw new Error("market not found");
     }
@@ -328,13 +330,19 @@ class SpotExchangeStore {
     const bidLevels = new Map<number, number>();
     for (const order of m.bids) {
       const remainingQty = order.quantity - order.filledQuantity;
-      bidLevels.set(order.price, (bidLevels.get(order.price) || 0) + remainingQty);
+      bidLevels.set(
+        order.price,
+        (bidLevels.get(order.price) || 0) + remainingQty,
+      );
     }
 
     const askLevels = new Map<number, number>();
     for (const order of m.asks) {
       const remainingQty = order.quantity - order.filledQuantity;
-      askLevels.set(order.price, (askLevels.get(order.price) || 0) + remainingQty);
+      askLevels.set(
+        order.price,
+        (askLevels.get(order.price) || 0) + remainingQty,
+      );
     }
 
     const finalBids = Array.from(bidLevels.entries()).map(([price, count]) => ({
@@ -355,14 +363,14 @@ class SpotExchangeStore {
     return Object.fromEntries(m);
   }
   deposit(userId: string, asset: string, amount: number): unknown {
-    if (!SpotExchangeStore.ASSETS.has(asset)) {
+    if (!SpotExchangeStore.SPOT_ASSETS.has(asset)) {
       throw new Error("invalid asset");
     }
     // const currentBalance =this.balanceStore.getBalance(userId);
-      // balanceStore.getBalance(userId) || new Map<string, number>();
+    // balanceStore.getBalance(userId) || new Map<string, number>();
     // currentBalance.set(asset, (currentBalance.get(asset) || 0) + amount);
     // this.balance.set(userId, currentBalance);
-    this.balanceStore.credit(userId,asset,amount);
+    this.balanceStore.credit(userId, asset, amount);
     return this.getUserBalance(userId);
   }
 }
