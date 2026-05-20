@@ -1,9 +1,8 @@
 import type {
   Depth,
-  Order,
-  OrderBook,
   Fill,
-} from "../types/exchange-store-types";
+} from "../types/common-types";
+import type { SpotOrder, SpotOrderBook } from "../types/spot-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 
@@ -23,8 +22,8 @@ class SpotExchangeStore {
     this.MARKETS.flatMap((m) => m.split("_")),
   );
 
-  private orderBooks = new Map<string, OrderBook>();
-  private orders = new Map<string, Order>();
+  private orderBooks = new Map<string, SpotOrderBook>();
+  private orders = new Map<string, SpotOrder>();
   // userId->asset->amount
   private initializeOrderBooks() {
     // a in arraay => a = index value in array
@@ -46,7 +45,7 @@ class SpotExchangeStore {
   //   Omit<Order, "orderId" | "filledQuantity"> means Order se ye do field hta do
   private checksForCreateOrder(
     input: Omit<
-      Order,
+      SpotOrder,
       | "orderId"
       | "filledQuantity"
       | "fills"
@@ -78,7 +77,7 @@ class SpotExchangeStore {
   }
   createOrder(
     input: Omit<
-      Order,
+      SpotOrder,
       | "orderId"
       | "filledQuantity"
       | "fills"
@@ -124,7 +123,7 @@ class SpotExchangeStore {
     while (this.orders.has(orderId)) {
       orderId = randomUUID();
     }
-    const order: Order = {
+    const order: SpotOrder = {
       orderId,
       filledQuantity: 0,
       ...input,
@@ -140,7 +139,7 @@ class SpotExchangeStore {
     const toIterate = ob[oppositeSide];
     while (order.filledQuantity < order.quantity && toIterate.length > 0) {
       // priority, record fills, handle partial fills, support limit
-      const bestOrder = toIterate[0] as Order;
+      const bestOrder = toIterate[0] as SpotOrder;
 
       if (input.orderType === "limit") {
         if (input.side === "buy" && bestOrder!.price > input.price) {
@@ -258,7 +257,7 @@ class SpotExchangeStore {
     return order;
   }
 
-  cancelOrder(_market: string, orderId: string): Order {
+  cancelOrder(_market: string, orderId: string): SpotOrder {
     // HM AMOUNT , COUNT NHI STORE KR RHE H
     // userID, amount, price
     // 1213, 0.5, 30000
@@ -304,7 +303,7 @@ class SpotExchangeStore {
     return order;
   }
 
-  getOrder(orderId: string): unknown {
+  getOrder(orderId: string): SpotOrder {
     const m = this.orders.get(orderId);
     if (!m) {
       throw new Error("order not found");

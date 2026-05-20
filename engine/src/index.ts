@@ -2,30 +2,39 @@
 // dotenv.config();
 import "dotenv/config";
 import { redis } from "./utils/redis";
-import type { EngineRequest } from "./types/messages";
-import { handleEngineRequest } from "./handler";
+import type { PerpsEngineRequest, SpotEngineRequest } from "./types/messages";
+import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handler";
 
 if (!process.env.INCOMING_QUEUE) {
   throw new Error("INCOMING_QUEUE is required!");
 }
 const INCOMING_QUEUE = process.env.INCOMING_QUEUE;
+//backend-to-engine-broker
+const SPOT_IQ= "SPOT_"+INCOMING_QUEUE;
+const PERPS_IQ= "PERPS_"+INCOMING_QUEUE;
+
 
 async function main(): Promise<void> {
   console.log("Engine listening on Redis queue", INCOMING_QUEUE);
   while (true) {
     try {
-      const result = await redis.brpop(INCOMING_QUEUE, 0);
+      const result = await redis.brpop(SPOT_IQ, PERPS_IQ, 0);
       if (!result) continue;
 
-      const [, raw] = result; // array desctructing
-      const request = JSON.parse(raw) as EngineRequest;
+      const [queueName, raw] = result; // array desctructing
+      const request = JSON.parse(raw) as SpotEngineRequest | PerpsEngineRequest;
 
       let payload: unknown;
       try {
-        payload = handleEngineRequest(request);
+        if(queueName===SPOT_IQ){
+            payload = handleEngineRequestForSpot(request);
+        } else if(queueName===PERPS_IQ){
+          payload = handleEngineRequestForPerps(request);
+        }
       } catch (err) {
         payload = { error: (err as Error).message };
       }
+      // respQ= kisme push krna h after processing , incoming msg k body m h
       await redis.lpush(
         request.responseQueue,
         JSON.stringify({

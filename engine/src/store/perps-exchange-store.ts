@@ -1,9 +1,8 @@
 import type {
   Depth,
-  Order,
-  OrderBook,
   Fill,
-} from "../types/exchange-store-types";
+} from "../types/common-types";
+import type { PerpsOrder, PerpsOrderBook } from "../types/perps-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 
@@ -31,8 +30,8 @@ class PerpsExchangeStore {
     this.PERPS_MARKETS.flatMap((m) => m.split("_")),
   );
 
-  private perpsOrderBooks = new Map<string, OrderBook>();
-  private perpsOrders = new Map<string, Order>();
+  private perpsOrderBooks = new Map<string, PerpsOrderBook>();
+  private perpsOrders = new Map<string, PerpsOrder>();
 
   public checkAndLiquidate(market: string, markPrice: number) {
     // in all positions of that market liquidate them
@@ -41,7 +40,7 @@ class PerpsExchangeStore {
 
   createPerpsOrder(
     input: Omit<
-      Order,
+      PerpsOrder,
       | "orderId"
       | "filledQuantity"
       | "fills"
@@ -53,11 +52,11 @@ class PerpsExchangeStore {
     throw new Error("not implmented createOrder");
   }
 
-  cancelPerpsOrder(_market: string, orderId: string): Order {
+  cancelPerpsOrder(_market: string, orderId: string): PerpsOrder {
     throw new Error("not implmented cancelOrder");
   }
 
-  getPerpsOrder(orderId: string): unknown {
+  getPerpsOrder(orderId: string): PerpsOrder {
     throw new Error("not implmented cancelOrder");
   }
 
@@ -71,6 +70,11 @@ class PerpsExchangeStore {
   // getUserPositions(userId) — all positions across all perps markets for a user
   getUserPosition(userId: string) {
     throw new Error("not implmented getPositions");
+  }
+  getUserBalance(userId: string): unknown {
+    const m = this.balanceStore.getBalance(userId);
+    // return m;  as map is not serializable(bcoz => ) we need to convert it to object
+    return Object.fromEntries(m);
   }
 }
 

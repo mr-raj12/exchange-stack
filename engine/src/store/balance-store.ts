@@ -1,9 +1,7 @@
 import type {
   Depth,
-  Order,
-  OrderBook,
   Fill,
-} from "../types/exchange-store-types";
+} from "../types/common-types";
 import { randomUUID } from "crypto";
 
 export interface getUserBalanceReturnType {
