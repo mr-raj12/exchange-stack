@@ -516,10 +516,11 @@ class PerpsExchangeStore {
     }
     return positions;
   }
-  getUserBalance(userId: string): unknown {
-    const m = this.balanceStore.getBalance(userId);
-    // return m;  as map is not serializable(bcoz => ) we need to convert it to object
-    return Object.fromEntries(m);
+  getUserBalance(userId: string): { balance: Record<string, number>; locked: Record<string, number> } {
+    
+    const m= this.balanceStore.getUserBalance(userId);
+    return m;
+  
   }
 }
 

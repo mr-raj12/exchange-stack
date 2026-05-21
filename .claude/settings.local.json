@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout *)",
+      "PowerShell(Get-Content \"g:\\\\s30\\\\cex-v2\\\\engine\\\\src\\\\store\\\\exchange-store.ts\" | Select-Object -First 180 | ForEach-Object {$i++; \"$i`t$_\"})",
+      "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\" -Recurse -Directory -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(bun run *)",
+      "Bash(echo \"Engine PID: $!\")",
+      "Bash(echo \"Backend PID: $!\")",
+      "Bash(bash test-api.sh)",
+      "Bash(bun --version)",
+      "Bash(winget install *)",
+      "Bash(curl -L -o /usr/local/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-amd64.exe)",
+      "Bash(chmod +x /usr/local/bin/jq)",
+      "Bash(jq --version)",
+      "PowerShell(winget install --id stedolan.jq -e --silent)",
+      "PowerShell(scoop install jq 2>&1)",
+      "PowerShell(choco install jq -y 2>&1)",
+      "PowerShell($env:PATH -split ';' | Where-Object { $_ -ne '' } | Select-Object -First 20)",
+      "Read(//usr/local/**)",
+      "Read(//c/Users/Mrityunjay Raj/**)",
+      "Bash(curl -fL \"https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-amd64.exe\" -o \"/c/Users/Mrityunjay Raj/bin/jq.exe\")",
+      "Bash(mkdir -p \"/c/Users/Mrityunjay Raj/bin\" && ls \"/c/Users/Mrityunjay Raj/bin\" 2>&1)",
+      "Bash(chmod +x \"/c/Users/Mrityunjay Raj/bin/jq.exe\")",
+      "Bash(\"/c/Users/Mrityunjay Raj/bin/jq.exe\" --version)",
+      "Bash(redis-cli ping *)",
+      "Bash(redis-cli.exe ping *)",
+      "Bash(bun -e ' *)",
+      "Bash(tasklist)",
+      "Bash(taskkill /F /IM bun.exe)",
+      "Bash(kill 29012 31756 37636 1372)",
+      "PowerShell(Get-Process bun -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "PowerShell(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Kill\\(\\) }; Start-Sleep -Seconds 2; $remaining = Get-Process -Name \"bun\" -ErrorAction SilentlyContinue; if \\($remaining\\) { $remaining | Select-Object Id, Name } else { Write-Output \"All bun processes killed\" })",
+      "Read(//tmp/**)",
+      "PowerShell(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Kill\\(\\) }; Start-Sleep -Seconds 2; Get-Process -Name \"bun\" -ErrorAction SilentlyContinue)",
+      "Bash(bc)",
+      "PowerShell(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Kill\\(\\) }; Start-Sleep -Seconds 2; Write-Host \"Done killing bun processes\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python -c ' *)",
+      "PowerShell(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue | ForEach-Object { $_.Kill\\(\\) }; Start-Sleep -Seconds 2; Write-Host \"bun processes killed\")",
+      "Bash(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Id, ProcessName, CPU)",
+      "Bash(git -C \"g:/s30/cex-v2\" diff --staged --stat)",
+      "Bash(git -C \"g:/s30/cex-v2\" diff --staged --name-only)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Mrityunjay Raj"
+    ]
+  }
+}

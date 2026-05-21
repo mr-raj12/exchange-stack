@@ -8,13 +8,15 @@
     "start": "bun run src/index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/ws": "^8.18.1"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "ioredis": "^5.10.1"
+    "ioredis": "^5.10.1",
+    "ws": "^8.20.1"
   }
 }

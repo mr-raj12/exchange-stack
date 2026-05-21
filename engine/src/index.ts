@@ -4,6 +4,8 @@ import "dotenv/config";
 import { redis } from "./utils/redis";
 import type { PerpsEngineRequest, SpotEngineRequest } from "./types/messages";
 import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handler";
+import { BinancePriceWs } from "./services/binance-ws";
+
 
 if (!process.env.INCOMING_QUEUE) {
   throw new Error("INCOMING_QUEUE is required!");
@@ -45,11 +47,14 @@ async function main(): Promise<void> {
     } catch (err) {
       // catch catches any error thown as throw new error("some error") and also any error which is not handled in try block
       console.error("engine loop error:", err);
-      setTimeout(() => {}, 1000);
+      // setTimeout(() => {}, 1000);
       await new Promise((r) => setTimeout(r, 1000));
     }
   }
 }
+const bs = new BinancePriceWs();
+bs.connect();
+
 main().catch((err) => {
   console.error("engine crashed: ", err);
   process.exit(1);
