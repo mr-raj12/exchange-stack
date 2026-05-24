@@ -1,16 +1,59 @@
 import jwt from "jsonwebtoken";
+import type { JwtPayload as DefaultJwtPayload } from "jsonwebtoken";
 
-const JWT_SECRET=process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET!;
 
-export interface JwtPayload {
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined");
+}
+
+export interface AppJwtPayload {
     userId: string;
-    // string is a primitive type and String is a wrapper object
 }
 
-export function createToken(payload: JwtPayload): string {
-    return jwt.sign(payload,JWT_SECRET, {expiresIn:"7d"});
+/**
+ * Create JWT
+ */
+export function createToken(payload: AppJwtPayload): string {
+    return jwt.sign(payload, JWT_SECRET, {
+        algorithm: "HS256",
+        expiresIn: "7d",
+        issuer: "my-api",
+        audience: "my-app",
+    });
 }
 
-export function verifyToken(token: string): JwtPayload {
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+/**
+ * Runtime payload validator
+ */
+function isValidPayload(payload: unknown): payload is AppJwtPayload {
+    return (
+        typeof payload === "object" &&
+        payload !== null &&
+        "userId" in payload &&
+        typeof (payload as Record<string, unknown>).userId === "string"
+    );
+}
+
+/**
+ * Verify JWT safely
+ */
+export function verifyToken(token: string): AppJwtPayload {
+    let decoded: string | DefaultJwtPayload;
+
+    try {
+        decoded = jwt.verify(token, JWT_SECRET, {
+            algorithms: ["HS256"],
+            issuer: "my-api",
+            audience: "my-app",
+        });
+    } catch {
+        throw new Error("Invalid or expired token");
+    }
+
+    if (!isValidPayload(decoded)) {
+        throw new Error("Invalid token payload");
+    }
+
+    return decoded;
 }
