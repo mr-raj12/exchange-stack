@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { getDepth } from "../controllers/market-controller";
 
-export const marketRouter = Router();
+export const spotMarketRouter = Router();
 
-marketRouter.get("/:symbol",getDepth);
+spotMarketRouter.get("/:symbol",getDepth);
+
+export const perpsMarketRouter = Router();
+
+perpsMarketRouter.get("/:symbol",getDepth);

@@ -2,6 +2,7 @@ declare global { // opens the global namespace
     namespace Express { // in express' namespace
         interface Request { // redeclare Request interface
             userId?: string;
+            queue?: "SPOT" | "PERPS"; // optional property that can be either "SPOT" or "PERPS"
         }
     }
 }

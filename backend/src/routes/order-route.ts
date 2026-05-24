@@ -2,10 +2,16 @@ import { Router } from "express";
 import { cancelOrder, getOrder, createOrder } from "../controllers/order-controller";
 import { authMiddleware } from "../middleware/auth-middleware";
 
-export const orderRouter = Router();
+export const spotOrderRouter = Router();
 
-orderRouter.use(authMiddleware);
+// orderRouter.use(authMiddleware);
 
-orderRouter.post("/",createOrder);
-orderRouter.post("/cancel",cancelOrder);
-orderRouter.get("/:id",getOrder);
+spotOrderRouter.post("/",authMiddleware,createOrder);
+spotOrderRouter.post("/cancel",authMiddleware,cancelOrder);
+spotOrderRouter.get("/:id",authMiddleware,getOrder);
+
+export const perpsOrderRouter = Router();
+perpsOrderRouter.post("/",authMiddleware,createOrder);
+perpsOrderRouter.post("/cancel",authMiddleware,cancelOrder);
+perpsOrderRouter.get("/:id",authMiddleware,getOrder);
+// need to implment this perpsOrderRouter

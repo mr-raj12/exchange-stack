@@ -29,9 +29,15 @@ const pending = new Map<string, Pending>();
 // identity<string>("hello")
 // Then:
 // T = string
+const SPOT_IQ= "SPOT_"+INCOMING_QUEUE;
+const PERPS_IQ= "PERPS_"+INCOMING_QUEUE;
+const SPOT_RQ= "SPOT_"+RESPONSE_QUEUE;
+const PERPS_RQ= "PERPS_"+RESPONSE_QUEUE;
+
 export async function sendToEngine<TResponse = unknown>(
   type: EngineRequestType,
-  data: unknown,
+  data: unknown, // { queue?: "SPOT" | "PERPS" }, // data is an object that can have any shape but may optionally include a queue property that can be either "SPOT" or "PERPS"
+  queue?: "SPOT" | "PERPS"
 ): Promise<TResponse> {
   const correlationId = uuidv4();
   return new Promise<TResponse>((resolve, reject) => { // new Promise = the executor 
@@ -50,15 +56,19 @@ export async function sendToEngine<TResponse = unknown>(
       reject,
       timer,
     });
-
+    if(!queue){
+      throw new Error("queue must be specified in data object");
+    }
+    const queueToPush = queue === "SPOT" ? SPOT_IQ : PERPS_IQ;
+    
     redis
       .lpush(
-        INCOMING_QUEUE,
+        queueToPush,
         JSON.stringify({
           type,
           data,
           correlationId,
-          responseQueue: RESPONSE_QUEUE,
+          responseQueue: queue === "SPOT" ? SPOT_RQ : PERPS_RQ,
         }),
       )
       .catch((err) => {
@@ -70,10 +80,10 @@ export async function sendToEngine<TResponse = unknown>(
 }
 
 export async function startResponseLoop(): Promise<void> {
-  console.log(`backend listening for responses on ${RESPONSE_QUEUE}`);
+  console.log(`backend listening for responses on ${SPOT_RQ} and ${PERPS_RQ}...`);
   while (true) {
     try {
-      const result = await redis.brpop(RESPONSE_QUEUE, 1);
+      const result = await redis.brpop(SPOT_RQ, PERPS_RQ, 1);
       // result = [qname,value] or NULL
       if (!result) continue;
 

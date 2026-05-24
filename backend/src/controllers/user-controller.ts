@@ -5,7 +5,7 @@ export async function getBalance(req: Request, res: Response): Promise<void> {
   try {
     const result = await sendToEngine("get_user_balance", {
       userId: req.userId,
-    });
+    },req.queue);
     if (result && typeof result === "object" && "error" in result) {
       res.status(400).json(result);
       return;
@@ -30,7 +30,7 @@ export async function deposit(req: Request, res: Response): Promise<void> {
       userId: req.userId,
       asset,
       amount,
-    });
+    }, req.queue);
     if (result && typeof result === "object" && "error" in result) {
       res.status(400).json(result);
       return;
@@ -39,4 +39,13 @@ export async function deposit(req: Request, res: Response): Promise<void> {
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
+}
+export async function getAllPositions(_req:Request, res:Response): Promise<void>{
+  res.status(501).json({ error: "not implemented getAllPositions" });
+  // throw new Error(`not implemented from getAllPositions`)
+}
+
+export async function getSinglePosition(_req:Request, res:Response): Promise<void>{
+  res.status(501).json({ error: "not implemented getSinglePosition" });
+  // throw new Error(`not implemented from getSinglePosition`)
 }
