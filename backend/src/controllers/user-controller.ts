@@ -40,12 +40,38 @@ export async function deposit(req: Request, res: Response): Promise<void> {
     res.status(502).json({ error: (err as Error).message });
   }
 }
-export async function getAllPositions(_req:Request, res:Response): Promise<void>{
-  res.status(501).json({ error: "not implemented getAllPositions" });
+export async function getAllPositions(req:Request, res:Response): Promise<void>{
+  try{
+    const result = await sendToEngine("get_user_position", {
+      userId: req.userId
+    }, req.queue);
+    if (result && typeof result === "object" && "error" in result) {
+      res.status(400).json(result);
+      return;
+    }
+    res.json(result);
+  } catch(err){
+    res.status(502).json({error: (err as Error).message})
+  }
+  // res.status(501).json({ error: "not implemented getAllPositions" });
   // throw new Error(`not implemented from getAllPositions`)
 }
 
-export async function getSinglePosition(_req:Request, res:Response): Promise<void>{
-  res.status(501).json({ error: "not implemented getSinglePosition" });
+export async function getSinglePosition(req:Request, res:Response): Promise<void>{
+  const {market} =  req.params;
+  try{
+    const result = await sendToEngine("get_position", {
+      userId: req.userId,
+        market
+    }, req.queue);
+    if (result && typeof result === "object" && "error" in result) {
+      res.status(400).json(result);
+      return;
+    }
+    res.json(result);
+  } catch(err){
+    res.status(502).json({error: (err as Error).message})
+  }
+  // res.status(501).json({ error: "not implemented getSinglePosition" });
   // throw new Error(`not implemented from getSinglePosition`)
 }

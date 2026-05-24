@@ -5,8 +5,8 @@ export type EngineRequestType = // union of string literals, type m union hota h
   | "get_depth"
   | "get_user_balance"
   | "deposit"
-  | "get_position"
   | "get_user_position"
+  | "get_position"
 
 // interface supports merging, types cant 
 // types support intersection
