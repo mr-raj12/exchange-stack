@@ -19,8 +19,10 @@ export class BinancePriceWs {
 
     this.ws.on("message", (data) => {
       try {
+        // nothing being sent from binance ws, needed to fix this 
+        console.log("RAW:", data.toString());
         const msg = JSON.parse(data.toString());
-
+        console.log("received message:", msg);
         const price = Number(msg.p);
 
         console.log("btc mark price:", price);
@@ -68,3 +70,7 @@ export class BinancePriceWs {
     this.ws = null;
   }
 }
+
+
+const binancePriceWs = new BinancePriceWs();
+binancePriceWs.connect();
