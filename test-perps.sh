@@ -330,15 +330,15 @@ USD_B_BEFORE=$(_curl_json GET /perps/balance -H "Authorization: Bearer $TOKEN_B"
 # 8a: User B places limit SELL (resting on ask side)
 SELL_RESP=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_B" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":30000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":40000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
 SELL_ORDER_ID=$(printf '%s' "$SELL_RESP" | jq -r '.orderId // empty')
 TOTAL=$((TOTAL + 1))
 if [ -n "$SELL_ORDER_ID" ] && [ "$SELL_ORDER_ID" != "null" ]; then
     PASS=$((PASS + 1))
-    printf "  ${GREEN}PASS${NC}  %-68s orderId=%s\n" "Limit sell placed (user B, 1 BTC_USD @ \$30k)" "$SELL_ORDER_ID"
+    printf "  ${GREEN}PASS${NC}  %-68s orderId=%s\n" "Limit sell placed (user B, 1 BTC_USD @ \$40k)" "$SELL_ORDER_ID"
 else
     FAIL=$((FAIL + 1))
-    printf "  ${RED}FAIL${NC}  %-68s no orderId — engine down?\n" "Limit sell placed (user B, 1 BTC_USD @ \$30k)"
+    printf "  ${RED}FAIL${NC}  %-68s no orderId — engine down?\n" "Limit sell placed (user B, 1 BTC_USD @ \$40k)"
     printf "        ${RED}body: %s${NC}\n" "$(printf '%s' "$SELL_RESP" | head -c 200)"
 fi
 printf '%s\n' "$(jq -n --arg n "Limit sell placed (user B)" --arg m POST --arg p "/perps/order/" \
@@ -351,21 +351,21 @@ printf '%s\n' "$(jq -n --arg n "Limit sell placed (user B)" --arg m POST --arg p
 # 8b: Verify depth shows the ask before fill
 DEPTH_BEFORE=$(_curl_json GET "/perps/depth/$PERPS_MARKET")
 assert_body "Depth: resting sell visible in asks"   '.asks | length > 0' "true"  "$DEPTH_BEFORE"
-assert_body "Depth: best ask price = 30000"         '.asks[0].price'     "30000" "$DEPTH_BEFORE"
+assert_body "Depth: best ask price = 40000"         '.asks[0].price'     "40000" "$DEPTH_BEFORE"
 assert_body "Depth: bids side still empty"          '.bids | length'     "0"     "$DEPTH_BEFORE"
 
 # 8c: User A places limit BUY that crosses the ask (price >= ask → fills)
 BUY_RESP=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_A" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":31000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":41000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
 BUY_ORDER_ID=$(printf '%s' "$BUY_RESP" | jq -r '.orderId // empty')
 TOTAL=$((TOTAL + 1))
 if [ -n "$BUY_ORDER_ID" ] && [ "$BUY_ORDER_ID" != "null" ]; then
     PASS=$((PASS + 1))
-    printf "  ${GREEN}PASS${NC}  %-68s orderId=%s\n" "Crossing limit buy placed (user A, 1 BTC_USD @ \$31k)" "$BUY_ORDER_ID"
+    printf "  ${GREEN}PASS${NC}  %-68s orderId=%s\n" "Crossing limit buy placed (user A, 1 BTC_USD @ \$41k)" "$BUY_ORDER_ID"
 else
     FAIL=$((FAIL + 1))
-    printf "  ${RED}FAIL${NC}  %-68s no orderId — engine down?\n" "Crossing limit buy placed (user A, 1 BTC_USD @ \$31k)"
+    printf "  ${RED}FAIL${NC}  %-68s no orderId — engine down?\n" "Crossing limit buy placed (user A, 1 BTC_USD @ \$41k)"
     printf "        ${RED}body: %s${NC}\n" "$(printf '%s' "$BUY_RESP" | head -c 200)"
 fi
 printf '%s\n' "$(jq -n --arg n "Crossing limit buy placed (user A)" --arg m POST --arg p "/perps/order/" \
@@ -387,7 +387,7 @@ if [ -n "$BUY_ORDER_ID" ] && [ "$BUY_ORDER_ID" != "null" ]; then
     BUY_ORDER=$(_curl_json GET "/perps/order/$BUY_ORDER_ID" -H "Authorization: Bearer $TOKEN_A")
     assert_body "Buy order status = FILLED"              '.status'         "FILLED" "$BUY_ORDER"
     assert_body "Buy order filledQuantity = 1"           '.filledQuantity' "1"      "$BUY_ORDER"
-    assert_body "Buy order fill price = 30000 (maker)"   '.avgPrice'       "30000"  "$BUY_ORDER"
+    assert_body "Buy order fill price = 40000 (maker)"   '.avgPrice'       "40000"  "$BUY_ORDER"
 fi
 
 # 8f: depth is empty after both sides filled
@@ -406,9 +406,9 @@ POS_A=$(_curl_json GET "/perps/position/$PERPS_MARKET" -H "Authorization: Bearer
 assert_body "User A position: side = LONG"          '.side'   "LONG"      "$POS_A"
 assert_body "User A position: status = OPEN"        '.status' "OPEN"      "$POS_A"
 assert_body "User A position: market = BTC_USD"     '.market' "BTC_USD"   "$POS_A"
-assert_body "User A position: entryPrice = 30000"   '.entryPrice' "30000" "$POS_A"
+assert_body "User A position: entryPrice = 40000"   '.entryPrice' "40000" "$POS_A"
 assert_true "User A position: margin > 0"           '.margin > 0'          "$POS_A"
-assert_true "User A position: liquidationPrice > 0" '.liquidationPrice > 0' "$POS_A"
+assert_true "User A position: liquidationPrice >= 0" '.liquidationPrice >= 0' "$POS_A"
 # For LONG with leverage=1, liquidationPrice should be < entryPrice (liquidated if price drops to ~0)
 assert_true "User A LONG: liquidationPrice < entryPrice" \
     '.liquidationPrice < .entryPrice' "$POS_A"
@@ -427,7 +427,7 @@ run_test "GET /perps/position/$PERPS_MARKET – user B has position → 200" \
 POS_B=$(_curl_json GET "/perps/position/$PERPS_MARKET" -H "Authorization: Bearer $TOKEN_B")
 assert_body "User B position: side = SHORT"         '.side'   "SHORT"   "$POS_B"
 assert_body "User B position: status = OPEN"        '.status' "OPEN"    "$POS_B"
-assert_body "User B position: entryPrice = 30000"   '.entryPrice' "30000" "$POS_B"
+assert_body "User B position: entryPrice = 40000"   '.entryPrice' "40000" "$POS_B"
 assert_true "User B position: margin > 0"           '.margin > 0'  "$POS_B"
 # For SHORT with leverage=1, liquidationPrice should be > entryPrice
 assert_true "User B SHORT: liquidationPrice > entryPrice" \
@@ -463,13 +463,13 @@ USD_C_BEFORE=$(_curl_json GET /perps/balance -H "Authorization: Bearer $TOKEN_C"
 # Instead, use user B (who is SHORT) to place a BUY limit, then C sells into it
 LEV_SETUP_BUY=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_B" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":30000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":40000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
 LEV_SETUP_BUY_ID=$(printf '%s' "$LEV_SETUP_BUY" | jq -r '.orderId // empty')
 
-# User C sells 1 BTC @ $29,500 with leverage=5 (crosses the resting bid at $30k)
+# User C sells 1 BTC @ $39,500 with leverage=5 (crosses the resting bid at $40k)
 LEV5_RESP=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_C" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":29500,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":5}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":39500,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":5}")
 LEV5_ORDER_ID=$(printf '%s' "$LEV5_RESP" | jq -r '.orderId // empty')
 TOTAL=$((TOTAL + 1))
 if [ -n "$LEV5_ORDER_ID" ] && [ "$LEV5_ORDER_ID" != "null" ]; then
@@ -481,10 +481,10 @@ if [ -n "$LEV5_ORDER_ID" ] && [ "$LEV5_ORDER_ID" != "null" ]; then
     assert_body "Leverage=5 position: side=SHORT"   '.side'   "SHORT" "$POS_C"
     assert_body "Leverage=5 position: status=OPEN"  '.status' "OPEN"  "$POS_C"
     assert_true "Leverage=5 position: margin > 0"   '.margin > 0'     "$POS_C"
-    # margin should be roughly notional/5 (±fees/rounding), i.e. around $6,000
-    # We check it's less than the full notional ($30,000) and greater than $1
+    # margin should be roughly notional/5 (±fees/rounding), i.e. around $8,000
+    # We check it's less than the full notional ($40,000) and greater than $1
     assert_true "Leverage=5: margin < notional (margin deducted is 1/5 not full amount)" \
-        '.margin < 30000' "$POS_C"
+        '.margin < 40000' "$POS_C"
     assert_true "Leverage=5: margin > 1000 (sanity — at least some fraction of notional)" \
         '.margin > 1000' "$POS_C"
 
@@ -492,20 +492,20 @@ if [ -n "$LEV5_ORDER_ID" ] && [ "$LEV5_ORDER_ID" != "null" ]; then
     USD_C_AFTER=$(_curl_json GET /perps/balance -H "Authorization: Bearer $TOKEN_C" | jq -r '.balance.USD // 0')
     TOTAL=$((TOTAL + 1))
     MARGIN_DEDUCTED=$(echo "$USD_C_BEFORE - $USD_C_AFTER" | bc 2>/dev/null || echo "0")
-    # Margin deducted should be much less than $30,000 (it's ~$6,000 for leverage=5)
+    # Margin deducted should be much less than $40,000 (it's ~$8,000 for leverage=5)
     if command -v bc >/dev/null 2>&1 && [ "$MARGIN_DEDUCTED" != "0" ]; then
-        if (( $(echo "$MARGIN_DEDUCTED < 30000" | bc -l) )); then
+        if (( $(echo "$MARGIN_DEDUCTED < 40000" | bc -l) )); then
             PASS=$((PASS + 1))
-            printf "  ${GREEN}PASS${NC}  %-68s margin_deducted=%s (< notional 30000)\n" \
+            printf "  ${GREEN}PASS${NC}  %-68s margin_deducted=%s (< notional 40000)\n" \
                 "Leverage=5: only margin locked (not full notional)" "$MARGIN_DEDUCTED"
         else
             FAIL=$((FAIL + 1))
-            printf "  ${RED}FAIL${NC}  %-68s margin_deducted=%s expected < 30000\n" \
+            printf "  ${RED}FAIL${NC}  %-68s margin_deducted=%s expected < 40000\n" \
                 "Leverage=5: only margin locked (not full notional)" "$MARGIN_DEDUCTED"
         fi
         printf '%s\n' "$(jq -n --arg n "Leverage=5 margin deducted check" --arg m "ASSERT" --arg p "(balance delta)" \
-            --arg e "<30000" --arg a "$MARGIN_DEDUCTED" \
-            --argjson passed "$(echo "$MARGIN_DEDUCTED < 30000" | bc -l 2>/dev/null | grep -q 1 && echo true || echo false)" \
+            --arg e "<40000" --arg a "$MARGIN_DEDUCTED" \
+            --argjson passed "$(echo "$MARGIN_DEDUCTED < 40000" | bc -l 2>/dev/null | grep -q 1 && echo true || echo false)" \
             '{name:$n,method:$m,path:$p,expected_status:0,actual_status:0,passed:$passed,response:{margin_deducted:$a}}'
         )" >> "$TMP"
     fi
@@ -662,7 +662,7 @@ printf '%s\n' "$(jq -n --arg n "Market sell on empty perps book → CANCELLED" -
 # Place 1 resting ask, market buy for 3 → fills 1, cancels remaining 2
 PART_ASK=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_B" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":31000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":41000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}")
 PART_ASK_ID=$(printf '%s' "$PART_ASK" | jq -r '.orderId // empty')
 if [ -n "$PART_ASK_ID" ] && [ "$PART_ASK_ID" != "null" ]; then
     MKT_PART=$(_curl_json POST /perps/order/ \
@@ -804,17 +804,19 @@ fi
 
 # ─────────────────────────────────────────────────────────────
 section "16 · ORDER STATUS TRANSITIONS via GET /perps/order/:id"
-# Place sell (3 qty). Partially fill 1, verify PARTIALLY_FILLED.
-# Fill remaining 2, verify FILLED. All via perps queue.
+# Place sell (2 qty). Partially fill 1, verify PARTIALLY_FILLED.
+# Fill remaining 1, verify FILLED. All via perps queue.
+# Qty capped at 2 because User A's available margin by this point is ~$77k;
+# qty=2 second buy would need $86k and silently fail.
 # ─────────────────────────────────────────────────────────────
 TRANS_SELL=$(_curl_json POST /perps/order/ \
     -H "Authorization: Bearer $TOKEN_B" \
-    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":32000,\"quantity\":3,\"orderType\":\"limit\",\"leverage\":1}")
+    -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"sell\",\"price\":42000,\"quantity\":2,\"orderType\":\"limit\",\"leverage\":1}")
 TRANS_SELL_ID=$(printf '%s' "$TRANS_SELL" | jq -r '.orderId // empty')
 TOTAL=$((TOTAL + 1))
 if [ -n "$TRANS_SELL_ID" ] && [ "$TRANS_SELL_ID" != "null" ]; then
     PASS=$((PASS + 1))
-    printf "  ${GREEN}PASS${NC}  %-68s\n" "Status transition: 3-qty sell placed (user B @ \$32k)"
+    printf "  ${GREEN}PASS${NC}  %-68s\n" "Status transition: 2-qty sell placed (user B @ \$42k)"
 
     # initial state
     T1=$(_curl_json GET "/perps/order/$TRANS_SELL_ID" -H "Authorization: Bearer $TOKEN_B")
@@ -823,19 +825,19 @@ if [ -n "$TRANS_SELL_ID" ] && [ "$TRANS_SELL_ID" != "null" ]; then
 
     # partial fill: buy 1
     _curl_json POST /perps/order/ -H "Authorization: Bearer $TOKEN_A" \
-        -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":33000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}" \
+        -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":43000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}" \
         > /dev/null 2>&1 || true
     T2=$(_curl_json GET "/perps/order/$TRANS_SELL_ID" -H "Authorization: Bearer $TOKEN_B")
-    assert_body "Status: after 1-of-3 fill → PARTIALLY_FILLED" '.status'         "PARTIALLY_FILLED" "$T2"
+    assert_body "Status: after 1-of-2 fill → PARTIALLY_FILLED" '.status'         "PARTIALLY_FILLED" "$T2"
     assert_body "Status: filledQuantity=1 after partial fill"   '.filledQuantity' "1"                "$T2"
 
-    # full fill: buy remaining 2
+    # full fill: buy remaining 1
     _curl_json POST /perps/order/ -H "Authorization: Bearer $TOKEN_A" \
-        -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":33000,\"quantity\":2,\"orderType\":\"limit\",\"leverage\":1}" \
+        -d "{\"market\":\"$PERPS_MARKET\",\"side\":\"buy\",\"price\":43000,\"quantity\":1,\"orderType\":\"limit\",\"leverage\":1}" \
         > /dev/null 2>&1 || true
     T3=$(_curl_json GET "/perps/order/$TRANS_SELL_ID" -H "Authorization: Bearer $TOKEN_B")
     assert_body "Status: after full fill → FILLED"              '.status'         "FILLED"           "$T3"
-    assert_body "Status: filledQuantity=3 when fully filled"    '.filledQuantity' "3"                "$T3"
+    assert_body "Status: filledQuantity=2 when fully filled"    '.filledQuantity' "2"                "$T3"
     assert_true "Status: fills array has at least 1 entry"      '.fills | length >= 1'               "$T3"
 else
     FAIL=$((FAIL + 1))

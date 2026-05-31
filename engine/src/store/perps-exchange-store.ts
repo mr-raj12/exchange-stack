@@ -302,7 +302,11 @@ class PerpsExchangeStore {
     if (input.reduceOnly) {
       lockedPricePerUnit = 0; // reduce-only locks no new margin
     } else if (input.orderType === "market" && input.side === "sell") {
-      lockedPricePerUnit = ob.bids[0]?.price ?? input.price;
+      // Lock at best bid; if book empty → 0 so balance check passes and order cancels immediately
+      lockedPricePerUnit = ob.bids[0]?.price ?? 0;
+    } else if (input.orderType === "market" && input.side === "buy") {
+      // Lock at best ask; if book empty → 0 so balance check passes and order cancels immediately
+      lockedPricePerUnit = ob.asks[0]?.price ?? 0;
     } else {
       lockedPricePerUnit = input.price;
     }
