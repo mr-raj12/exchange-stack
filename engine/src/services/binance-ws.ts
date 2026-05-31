@@ -4,7 +4,9 @@ import { perpsExchangeStore } from "../store/perps-exchange-store";
 export class BinancePriceWs {
   private ws: WebSocket | null = null;
 
-  private readonly url = "wss://fstream.binance.com/ws/btcusdt@markPrice@1s";
+  // fstream.binance.com (futures) is geo-restricted — silently drops messages.
+  // Spot miniTicker is accessible everywhere and updates every ~1s.
+  private readonly url = "wss://stream.binance.com:9443/ws/btcusdt@miniTicker";
 
   private reconnectTimeout: NodeJS.Timeout | null = null;
 
@@ -19,14 +21,11 @@ export class BinancePriceWs {
 
     this.ws.on("message", (data) => {
       try {
-        // nothing being sent from binance ws, needed to fix this 
-        console.log("RAW:", data.toString());
         const msg = JSON.parse(data.toString());
-        console.log("received message:", msg);
-        const price = Number(msg.p);
-
-        console.log("btc mark price:", price);
-
+        // miniTicker: msg.c = close/last price, msg.s = symbol (BTCUSDT)
+        const price = Number(msg.c);
+        if (!price || isNaN(price)) return;
+        console.log(`[binance-ws] BTC spot price: ${price}`);
         perpsExchangeStore.checkAndLiquidate("BTC_USD", price);
       } catch (err) {
         console.error("message parse error:", err);

@@ -1,10 +1,14 @@
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
-import { redis } from "./redis.js";
+import { redis, makeRedisClient } from "./redis.js";
 import type {
   EngineRequestType,
   EngineResponse,
 } from "../types/engine-messages";
+
+// Dedicated blocking connection for brpop — must not share with lpush
+// because Redis blocks the whole connection while BRPOP is waiting.
+const redisSub = makeRedisClient();
 
 const INCOMING_QUEUE = process.env.INCOMING_QUEUE!;
 const BACKEND_QUEUE_ID = process.env.BACKEND_QUEUE_ID!;
@@ -60,7 +64,7 @@ export async function sendToEngine<TResponse = unknown>(
       throw new Error("queue must be specified in data object");
     }
     const queueToPush = queue === "SPOT" ? SPOT_IQ : PERPS_IQ;
-    
+    console.log(`[broker] send type=${type} queue=${queueToPush} correlationId=${correlationId}`);
     redis
       .lpush(
         queueToPush,
@@ -83,24 +87,22 @@ export async function startResponseLoop(): Promise<void> {
   console.log(`backend listening for responses on ${SPOT_RQ} and ${PERPS_RQ}...`);
   while (true) {
     try {
-      const result = await redis.brpop(SPOT_RQ, PERPS_RQ, 1);
-      // result = [qname,value] or NULL
+      const result = await redisSub.brpop(SPOT_RQ, PERPS_RQ, 1);
       if (!result) continue;
 
-      const [, raw] = result; // array destructing , the leading comma skips 0th element and binds element 1 to raw
+      const [qname, raw] = result;
       const message = JSON.parse(raw) as EngineResponse;
+      console.log(`[broker] response from ${qname} correlationId=${message.correlationId}`);
       const handler = pending.get(message.correlationId);
       if (!handler) {
-        console.warn(
-          `response with unknown correlationId: ${message.correlationId}`,
-        );
+        console.warn(`[broker] unknown correlationId: ${message.correlationId}`);
         continue;
       }
       clearTimeout(handler.timer);
       pending.delete(message.correlationId);
       handler.resolve(message.payload);
     } catch (err) {
-      console.log("response loop error:", err);
+      console.log("[broker] response loop error:", err);
       await new Promise((r) => setTimeout(r, 1000));
     }
   }

@@ -6,9 +6,14 @@ export interface PerpsOrder {
   market: string;
   side: Side;
   price: number;
+  /** Price used for margin locking — equals input.price for limit orders and market buys;
+   *  equals best-bid at placement for market sells so margin reflects actual exposure. */
+  lockedPricePerUnit: number;
   filledQuantity: number;
   quantity: number;
   orderType: OrderType;
+  /** If true, order may only reduce an existing position, never open or increase one. */
+  reduceOnly: boolean;
   status: OrderStatus;
   fills: Fill[];
   timestamp: number;

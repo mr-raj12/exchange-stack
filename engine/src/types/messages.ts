@@ -54,6 +54,7 @@ export type baseCreateOrderRequest<TExtra = unknown> = {
   price: number;
   quantity: number;
   orderType: "limit" | "market";
+  reduceOnly?: boolean;
 } & TExtra;
 export type baseCancelOrderRequest<TExtra = unknown> = {
   market: string;
@@ -61,6 +62,7 @@ export type baseCancelOrderRequest<TExtra = unknown> = {
 } & TExtra;
 export type baseGetOrderRequest<TExtra = unknown> = {
   orderId: string;
+  userId: string;
 } & TExtra;
 export type baseGetDepthRequest<TExtra= unknown> = {
   market: string;

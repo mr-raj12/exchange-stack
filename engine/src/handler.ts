@@ -65,7 +65,7 @@ export function handleEngineRequestForPerps(
     }
     case "get_order": {
       const data = request.data as perpsGetOrderRequest; // type assertion for get order request
-      return perpsExchangeStore.getPerpsOrder(data.orderId);
+      return perpsExchangeStore.getPerpsOrder(data.orderId, data.userId);
     }
     case "get_depth": {
       const data = request.data as perpsGetDepthRequest; // type assertion for get depth request
