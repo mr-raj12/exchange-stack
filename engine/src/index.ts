@@ -1,66 +1,115 @@
-// import dotenv from "dotenv";
-// dotenv.config();
 import "dotenv/config";
 import { redis } from "./utils/redis";
-import type { PerpsEngineRequest, SpotEngineRequest } from "./types/messages";
+import type { PerpsEngineRequest, SpotEngineRequest } from "shared";
+import {
+  SPOT_INCOMING_STREAM,
+  PERPS_INCOMING_STREAM,
+  MARK_PRICE_STREAM,
+  ENGINE_CONSUMER_GROUP,
+  ENGINE_CONSUMER_NAME,
+  backendResponseChannel,
+} from "shared";
 import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handler";
 import { BinancePriceWs } from "./services/binance-ws";
 
-
-if (!process.env.INCOMING_QUEUE) {
-  throw new Error("INCOMING_QUEUE is required!");
+function fieldsToObject(fields: string[]): Record<string, string> {
+  const obj: Record<string, string> = {};
+  for (let i = 0; i < fields.length; i += 2) {
+    obj[fields[i]!] = fields[i + 1]!;
+  }
+  return obj;
 }
-const INCOMING_QUEUE = process.env.INCOMING_QUEUE;
-//backend-to-engine-broker
-const SPOT_IQ= "SPOT_"+INCOMING_QUEUE;
-const PERPS_IQ= "PERPS_"+INCOMING_QUEUE;
 
+async function ensureConsumerGroups() {
+  for (const stream of [SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM]) {
+    try {
+      await redis.xgroup("CREATE", stream, ENGINE_CONSUMER_GROUP, "0", "MKSTREAM");
+    } catch (e: any) {
+      if (!e.message.includes("BUSYGROUP")) throw e;
+    }
+  }
+}
+
+async function processMessage(
+  streamName: string,
+  msgId: string,
+  raw: Record<string, string>
+) {
+  const request = JSON.parse(raw["payload"]!) as SpotEngineRequest | PerpsEngineRequest;
+  let payload: unknown;
+  try {
+    if (streamName === SPOT_INCOMING_STREAM) {
+      payload = handleEngineRequestForSpot(request);
+    } else {
+      payload = handleEngineRequestForPerps(request);
+    }
+  } catch (err) {
+    payload = { error: (err as Error).message };
+  }
+
+  await redis.publish(
+    backendResponseChannel(request.backendId),
+    JSON.stringify({ correlationId: request.correlationId, payload })
+  );
+  await redis.xack(streamName, ENGINE_CONSUMER_GROUP, msgId);
+}
+
+async function drainPending() {
+  for (const stream of [SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM]) {
+    const result = await redis.xreadgroup(
+      "GROUP", ENGINE_CONSUMER_GROUP, ENGINE_CONSUMER_NAME,
+      "COUNT", "100", "STREAMS", stream, "0"
+    ) as [string, [string, string[]][]][] | null;
+    if (!result) continue;
+
+    for (const [streamName, messages] of result) {
+      for (const [msgId, fields] of messages) {
+        const raw = fieldsToObject(fields);
+        const idleMs = Date.now() - parseInt(msgId.split("-")[0]!);
+        if (idleMs > 60_000) {
+          console.warn(`[engine] dead-lettering msgId=${msgId}`);
+          await redis.xack(streamName, ENGINE_CONSUMER_GROUP, msgId);
+          continue;
+        }
+        await processMessage(streamName, msgId, raw);
+      }
+    }
+  }
+}
 
 async function main(): Promise<void> {
-  console.log("Engine listening on Redis queue", INCOMING_QUEUE);
+  await ensureConsumerGroups();
+  await drainPending();
+  console.log("Engine listening on streams...");
+
   while (true) {
     try {
-      const result = await redis.brpop(SPOT_IQ, PERPS_IQ, 0);
-      if (!result) continue;
+      const results = await redis.xreadgroup(
+        "GROUP", ENGINE_CONSUMER_GROUP, ENGINE_CONSUMER_NAME,
+        "COUNT", "1",
+        "BLOCK", "0",
+        "STREAMS",
+        SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM,
+        ">", ">"
+      ) as [string, [string, string[]][]][] | null;
+      if (!results) continue;
 
-      const [queueName, raw] = result; // array desctructing
-      const request = JSON.parse(raw) as SpotEngineRequest | PerpsEngineRequest;
-
-      let payload: unknown;
-      try {
-        if(queueName===SPOT_IQ){
-            payload = handleEngineRequestForSpot(request);
-        } else if(queueName===PERPS_IQ){
-          payload = handleEngineRequestForPerps(request);
+      for (const [streamName, messages] of results) {
+        for (const [msgId, fields] of messages) {
+          await processMessage(streamName, msgId, fieldsToObject(fields));
         }
-      } catch (err) {
-        payload = { error: (err as Error).message };
       }
-      // respQ= kisme push krna h after processing , incoming msg k body m h
-      await redis.lpush(
-        request.responseQueue,
-        JSON.stringify({
-          correlationId: request.correlationId,
-          payload,
-        }),
-      );
     } catch (err) {
-      // catch catches any error thown as throw new error("some error") and also any error which is not handled in try block
       console.error("engine loop error:", err);
-      // setTimeout(() => {}, 1000);
       await new Promise((r) => setTimeout(r, 1000));
     }
   }
 }
+
 const bs = new BinancePriceWs();
 bs.connect();
 
 main().catch((err) => {
-  console.error("engine crashed: ", err);
+  console.error("engine crashed:", err);
   process.exit(1);
 });
-
-
-// error call stack ke upar bubble karta rehta hai jab tak koi try/catch na mile. So:
-// nestedFunction throws → getUserBalance (no catch) → handleEngineRequest (no catch) → index.ts catch → { error: message } as payload.
-// Koi bhi intermediate function mein try/catch nahi chahiye — bas ek top-level catch kaafi hai.

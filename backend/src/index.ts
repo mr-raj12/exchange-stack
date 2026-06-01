@@ -3,7 +3,7 @@ import  express from "express" // express function creates an app : Express Cent
 import { prisma } from "./db.js"; // .js in place of .ts because it is a relative import and they re wirtten with .js becuase ts source is compiled to js 
 // .js using ensures the paths remain valid after compilation (avoid runtime module resolution issues)
 import { authRouter } from "./routes/auth-router.js";
-import { sendToEngine, startResponseLoop } from "./utils/broker.js";
+import { sendToEngine, initBroker } from "./utils/broker.js";
 import { spotOrderRouter,perpsOrderRouter } from "./routes/order-route.js";
 import { spotMarketRouter,perpsMarketRouter } from "./routes/market-route.js";
 import { spotUserRouter,perpsUserRouter } from "./routes/user-route.js";
@@ -49,15 +49,14 @@ app.get("/debug/ping-engine", async (_req, res)=>{
    } 
 })
 
-app.listen(PORT,()=>{ // bind the TCP port and start accpeting connections, callback fires once the socket is open  
-    console.log(`backend listening @ PORT: ${PORT}`);
-    
-});
-
-startResponseLoop().catch((err)=>{
-    console.error("response loop crashed:", err);
+initBroker()
+  .then(() => {
+    app.listen(PORT, () => console.log(`backend ${process.env.BACKEND_INSTANCE_ID} listening @ PORT: ${PORT}`));
+  })
+  .catch((err) => {
+    console.error("broker init failed:", err);
     process.exit(1);
-});
+  });
 
 //express= arrat of middleware functions
 

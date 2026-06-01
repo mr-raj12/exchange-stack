@@ -13,7 +13,7 @@ import type {
   perpsGetDepthRequest,
   getPositionRequestPerpsOnly,
   getUserPositionRequestPerpsOnly,
-} from "./types/messages";
+} from "shared";
 import { spotExchangeStore } from "./store/spot-exchange-store";
 import { perpsExchangeStore } from "./store/perps-exchange-store";
 
