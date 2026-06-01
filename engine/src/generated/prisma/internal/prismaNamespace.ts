@@ -391,7 +391,8 @@ export const ModelName = {
   OrderbookSnapshot: 'OrderbookSnapshot',
   InsuranceFundEvent: 'InsuranceFundEvent',
   FundingRate: 'FundingRate',
-  FundingPayment: 'FundingPayment'
+  FundingPayment: 'FundingPayment',
+  EngineSnapshot: 'EngineSnapshot'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "order" | "fill" | "position" | "balance" | "orderbookSnapshot" | "insuranceFundEvent" | "fundingRate" | "fundingPayment"
+    modelProps: "order" | "fill" | "position" | "balance" | "orderbookSnapshot" | "insuranceFundEvent" | "fundingRate" | "fundingPayment" | "engineSnapshot"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EngineSnapshot: {
+      payload: Prisma.$EngineSnapshotPayload<ExtArgs>
+      fields: Prisma.EngineSnapshotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EngineSnapshotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EngineSnapshotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        findFirst: {
+          args: Prisma.EngineSnapshotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EngineSnapshotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        findMany: {
+          args: Prisma.EngineSnapshotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>[]
+        }
+        create: {
+          args: Prisma.EngineSnapshotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        createMany: {
+          args: Prisma.EngineSnapshotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EngineSnapshotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>[]
+        }
+        delete: {
+          args: Prisma.EngineSnapshotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        update: {
+          args: Prisma.EngineSnapshotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        deleteMany: {
+          args: Prisma.EngineSnapshotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EngineSnapshotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EngineSnapshotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>[]
+        }
+        upsert: {
+          args: Prisma.EngineSnapshotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EngineSnapshotPayload>
+        }
+        aggregate: {
+          args: Prisma.EngineSnapshotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEngineSnapshot>
+        }
+        groupBy: {
+          args: Prisma.EngineSnapshotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EngineSnapshotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EngineSnapshotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EngineSnapshotCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1152,6 +1227,16 @@ export const FundingPaymentScalarFieldEnum = {
 } as const
 
 export type FundingPaymentScalarFieldEnum = (typeof FundingPaymentScalarFieldEnum)[keyof typeof FundingPaymentScalarFieldEnum]
+
+
+export const EngineSnapshotScalarFieldEnum = {
+  id: 'id',
+  walCursor: 'walCursor',
+  state: 'state',
+  createdAt: 'createdAt'
+} as const
+
+export type EngineSnapshotScalarFieldEnum = (typeof EngineSnapshotScalarFieldEnum)[keyof typeof EngineSnapshotScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1408,6 +1493,7 @@ export type GlobalOmitConfig = {
   insuranceFundEvent?: Prisma.InsuranceFundEventOmit
   fundingRate?: Prisma.FundingRateOmit
   fundingPayment?: Prisma.FundingPaymentOmit
+  engineSnapshot?: Prisma.EngineSnapshotOmit
 }
 
 /* Types for Logging */

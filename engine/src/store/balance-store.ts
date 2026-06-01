@@ -116,6 +116,38 @@ export class BalanceStore {
     // return m;  as map is not serializable(bcoz => ) we need to convert it to object
     return Object.fromEntries(m);
   }
+
+  // Serialize all balances to a plain JSON-safe object for snapshotting.
+  serialize(): Record<string, { balance: Record<string, number>; locked: Record<string, number> }> {
+    const out: Record<string, { balance: Record<string, number>; locked: Record<string, number> }> = {};
+    for (const [userId, balMap] of this.balance) {
+      out[userId] = {
+        balance: Object.fromEntries(balMap),
+        locked: Object.fromEntries(this.locked.get(userId) ?? new Map()),
+      };
+    }
+    return out;
+  }
+
+  // Rebuild all balance Maps from a snapshot object.
+  restoreFromSnapshot(data: Record<string, { balance: Record<string, number>; locked: Record<string, number> }>): void {
+    this.balance.clear();
+    this.locked.clear();
+    for (const [userId, { balance, locked }] of Object.entries(data)) {
+      this.balance.set(userId, new Map(Object.entries(balance).map(([a, v]) => [a, Number(v)])));
+      this.locked.set(userId, new Map(Object.entries(locked).map(([a, v]) => [a, Number(v)])));
+    }
+  }
+
+  // Directly set a specific asset balance for a user — used during WAL replay.
+  walSetBalance(userId: string, asset: string, available: number, locked: number): void {
+    let bal = this.balance.get(userId);
+    if (!bal) { bal = new Map(); this.balance.set(userId, bal); }
+    bal.set(asset, available);
+    let lck = this.locked.get(userId);
+    if (!lck) { lck = new Map(); this.locked.set(userId, lck); }
+    lck.set(asset, locked);
+  }
   //   deposit(userId: string, asset: string, amount: number): unknown {
   //     if (!ExchangeStore.ASSETS.has(asset)) {
   //       throw new Error("invalid asset");

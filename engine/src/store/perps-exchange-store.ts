@@ -9,6 +9,7 @@ import { balanceStore, BalanceStore } from "./balance-store";
 import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent, writeFundingRate, writeOrderbookSnapshot } from "../db/writer.js";
 import { INSURANCE_FUND_USER_ID } from "../constants.js";
 import { publishUserEvent, publishMarketEvent, publishOrderbookSnapshot } from "../publisher.js";
+import { appendWAL } from "../wal/writer";
 
 // Input type for order creation — excludes engine-computed fields; reduceOnly is optional (defaults false).
 type CreateOrderInput = Omit<
@@ -150,6 +151,7 @@ class PerpsExchangeStore {
       };
       posMap.set(order.userId, newPos);
       writePosition(newPos);
+      appendWAL({ type: "position_state", market: newPos.market, userId: newPos.userId, data: newPos, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(newPos);
       return;
     }
@@ -170,6 +172,7 @@ class PerpsExchangeStore {
         existingPos.leverage,
       );
       writePosition(existingPos);
+      appendWAL({ type: "position_state", market: existingPos.market, userId: existingPos.userId, data: existingPos, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(existingPos);
       return;
     }
@@ -208,6 +211,7 @@ class PerpsExchangeStore {
         this.balanceStore.unlock(order.userId, quote, addedMargin);
       }
       writePosition(existingPos);
+      appendWAL({ type: "position_state", market: existingPos.market, userId: existingPos.userId, data: existingPos, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(existingPos);
       return;
     }
@@ -229,6 +233,7 @@ class PerpsExchangeStore {
       existingPos.status = "CLOSED";
       existingPos.size = 0;
       writePosition(existingPos); // capture closed state before delete
+      appendWAL({ type: "position_state", market: existingPos.market, userId: existingPos.userId, data: existingPos, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(existingPos);
       posMap.delete(order.userId);
       return;
@@ -258,6 +263,7 @@ class PerpsExchangeStore {
       const closedSnapForDb: PerpsPosition = { ...existingPos, status: "CLOSED", size: 0 };
       posMap.delete(order.userId);
       writePosition(closedSnapForDb);
+      appendWAL({ type: "position_state", market: closedSnapForDb.market, userId: closedSnapForDb.userId, data: closedSnapForDb, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(closedSnapForDb);
 
       // Open new position in opposite direction (leftover qty)
@@ -277,6 +283,7 @@ class PerpsExchangeStore {
       };
       posMap.set(order.userId, flippedPos);
       writePosition(flippedPos);
+      appendWAL({ type: "position_state", market: flippedPos.market, userId: flippedPos.userId, data: flippedPos, timestamp: Date.now() }).catch(console.error);
       this.publishPositionEvent(flippedPos);
     }
   }
@@ -806,6 +813,7 @@ class PerpsExchangeStore {
           bestOppositeOrder.status = "PARTIALLY_FILLED";
         }
         writeOrder(bestOppositeOrder, "PERPS");
+        appendWAL({ type: "order_fill", exchange: "PERPS", market: input.market, data: bestOppositeOrder, timestamp: Date.now() }).catch(console.error);
         // Publish fill events for taker and maker
         publishUserEvent(order.userId, {
           type: "fill",
@@ -882,6 +890,7 @@ class PerpsExchangeStore {
     }
 
     writeOrder(order, "PERPS");
+    appendWAL({ type: "order_created", exchange: "PERPS", market: order.market, userId: order.userId, data: order, timestamp: Date.now() }).catch(console.error);
     // Skip publishing order updates for liquidation orders — they're system-internal
     if (!order.isLiquidation) {
       publishUserEvent(order.userId, {
@@ -913,7 +922,10 @@ class PerpsExchangeStore {
     for (const userId of [takerId, ...makerIds]) {
       const bal = this.balanceStore.getBalance(userId);
       const lck = this.balanceStore.getLocked(userId);
-      writeBalance(userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
+      const available = bal.get(quote) ?? 0;
+      const locked = lck.get(quote) ?? 0;
+      writeBalance(userId, quote, available, locked);
+      appendWAL({ type: "balance_snapshot", userId, data: { userId, asset: quote, available, locked }, timestamp: Date.now() }).catch(console.error);
     }
   }
 
@@ -952,6 +964,11 @@ class PerpsExchangeStore {
     }
 
     writeOrder(order, "PERPS");
+    appendWAL({ type: "order_cancelled", exchange: "PERPS", market: order.market, userId: order.userId, data: order, timestamp: Date.now() }).catch(console.error);
+    const quote = order.market.split("_")[1]!;
+    const bal = this.balanceStore.getBalance(order.userId);
+    const lck = this.balanceStore.getLocked(order.userId);
+    appendWAL({ type: "balance_snapshot", userId: order.userId, data: { userId: order.userId, asset: quote, available: bal.get(quote) ?? 0, locked: lck.get(quote) ?? 0 }, timestamp: Date.now() }).catch(console.error);
     publishUserEvent(order.userId, {
       type: "order_update",
       orderId: order.orderId,
@@ -1019,6 +1036,82 @@ class PerpsExchangeStore {
 
   getUserBalance(userId: string): { balance: Record<string, number>; locked: Record<string, number> } {
     return this.balanceStore.getUserBalance(userId);
+  }
+
+  serialize(): {
+    orders: PerpsOrder[];
+    orderBooks: Record<string, { bids: PerpsOrder[]; asks: PerpsOrder[] }>;
+    positions: Record<string, Record<string, PerpsPosition>>;
+    lastMarkPrices: Record<string, number>;
+  } {
+    const positions: Record<string, Record<string, PerpsPosition>> = {};
+    for (const [market, posMap] of this.perpsPosition) {
+      positions[market] = Object.fromEntries(posMap);
+    }
+    const orderBooks: Record<string, { bids: PerpsOrder[]; asks: PerpsOrder[] }> = {};
+    for (const [k, v] of this.perpsOrderBooks) {
+      orderBooks[k] = { bids: [...v.bids], asks: [...v.asks] };
+    }
+    return {
+      orders: Array.from(this.perpsOrders.values()),
+      orderBooks,
+      positions,
+      lastMarkPrices: Object.fromEntries(this.lastMarkPrice),
+    };
+  }
+
+  restoreFromSnapshot(data: {
+    orders: PerpsOrder[];
+    orderBooks: Record<string, { bids: PerpsOrder[]; asks: PerpsOrder[] }>;
+    positions: Record<string, Record<string, PerpsPosition>>;
+    lastMarkPrices: Record<string, number>;
+  }): void {
+    this.perpsOrders.clear();
+    for (const o of data.orders) this.perpsOrders.set(o.orderId, o);
+    this.perpsOrderBooks.clear();
+    for (const [k, v] of Object.entries(data.orderBooks)) {
+      this.perpsOrderBooks.set(k, { bids: [...v.bids], asks: [...v.asks] });
+    }
+    this.perpsPosition.clear();
+    for (const [market, posMap] of Object.entries(data.positions)) {
+      this.perpsPosition.set(
+        market,
+        new Map(Object.entries(posMap) as [string, PerpsPosition][]),
+      );
+    }
+    this.lastMarkPrice.clear();
+    for (const [k, v] of Object.entries(data.lastMarkPrices)) {
+      this.lastMarkPrice.set(k, Number(v));
+    }
+  }
+
+  // Set or remove a perps order in internal maps — used during WAL replay.
+  walSetOrder(order: PerpsOrder): void {
+    this.perpsOrders.set(order.orderId, order);
+    const ob = this.perpsOrderBooks.get(order.market);
+    if (!ob) return;
+    const sideKey: "bids" | "asks" = order.side === "buy" ? "bids" : "asks";
+    const arr = ob[sideKey];
+    const idx = arr.findIndex((o) => o.orderId === order.orderId);
+    if (idx >= 0) arr.splice(idx, 1);
+    if (order.status === "OPEN" || order.status === "PARTIALLY_FILLED") {
+      arr.push(order);
+      arr.sort((a, b) => {
+        if (a.price === b.price) return a.timestamp - b.timestamp;
+        return order.side === "buy" ? b.price - a.price : a.price - b.price;
+      });
+    }
+  }
+
+  // Set or remove a perps position in the internal map — used during WAL replay.
+  walSetPosition(position: PerpsPosition): void {
+    const posMap = this.perpsPosition.get(position.market);
+    if (!posMap) return;
+    if (position.status === "OPEN") {
+      posMap.set(position.userId, position);
+    } else {
+      posMap.delete(position.userId);
+    }
   }
 }
 

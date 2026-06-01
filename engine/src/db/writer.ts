@@ -172,6 +172,21 @@ export function writeOrderbookSnapshot(
   );
 }
 
+// Persist a full engine state snapshot (awaitable — not fire-and-forget).
+export async function writeEngineSnapshotAwait(walCursor: string, state: unknown): Promise<void> {
+  await prisma.engineSnapshot.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: { walCursor, state: state as any },
+  });
+}
+
+// Read the most recent snapshot (returns null if none exist).
+export async function readLatestEngineSnapshot(): Promise<{ walCursor: string; state: unknown } | null> {
+  const row = await prisma.engineSnapshot.findFirst({ orderBy: { createdAt: "desc" } });
+  if (!row) return null;
+  return { walCursor: row.walCursor, state: row.state };
+}
+
 // Snapshot current available + locked for a user/asset after a fill settles.
 export function writeBalance(userId: string, asset: string, available: number, locked: number): void {
   enqueueWrite(() =>

@@ -57,3 +57,8 @@ export type FundingRate = Prisma.FundingRateModel
  * 
  */
 export type FundingPayment = Prisma.FundingPaymentModel
+/**
+ * Model EngineSnapshot
+ * 
+ */
+export type EngineSnapshot = Prisma.EngineSnapshotModel

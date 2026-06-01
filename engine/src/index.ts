@@ -14,6 +14,8 @@ import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handl
 import { perpsExchangeStore } from "./store/perps-exchange-store";
 import { balanceStore } from "./store/balance-store";
 import { INSURANCE_FUND_USER_ID } from "./constants";
+import { restoreFromSnapshotAndReplay } from "./wal/replay";
+import { startSnapshotLoop } from "./wal/snapshot";
 
 function fieldsToObject(fields: string[]): Record<string, string> {
   const obj: Record<string, string> = {};
@@ -96,8 +98,10 @@ function seedInsuranceFund(): void {
 
 async function main(): Promise<void> {
   seedInsuranceFund();
+  await restoreFromSnapshotAndReplay();
   await ensureConsumerGroups();
   await drainPending();
+  startSnapshotLoop();
   console.log("Engine listening on streams...");
 
   while (true) {

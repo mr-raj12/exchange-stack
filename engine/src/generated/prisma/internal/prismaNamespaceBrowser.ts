@@ -58,7 +58,8 @@ export const ModelName = {
   OrderbookSnapshot: 'OrderbookSnapshot',
   InsuranceFundEvent: 'InsuranceFundEvent',
   FundingRate: 'FundingRate',
-  FundingPayment: 'FundingPayment'
+  FundingPayment: 'FundingPayment',
+  EngineSnapshot: 'EngineSnapshot'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -187,6 +188,16 @@ export const FundingPaymentScalarFieldEnum = {
 } as const
 
 export type FundingPaymentScalarFieldEnum = (typeof FundingPaymentScalarFieldEnum)[keyof typeof FundingPaymentScalarFieldEnum]
+
+
+export const EngineSnapshotScalarFieldEnum = {
+  id: 'id',
+  walCursor: 'walCursor',
+  state: 'state',
+  createdAt: 'createdAt'
+} as const
+
+export type EngineSnapshotScalarFieldEnum = (typeof EngineSnapshotScalarFieldEnum)[keyof typeof EngineSnapshotScalarFieldEnum]
 
 
 export const SortOrder = {

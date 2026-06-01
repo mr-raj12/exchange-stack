@@ -1,3 +1,4 @@
+export const WAL_STREAM             = "wal_stream";
 export const SPOT_INCOMING_STREAM   = "SPOT_incoming_stream";
 export const PERPS_INCOMING_STREAM  = "PERPS_incoming_stream";
 export const MARK_PRICE_STREAM      = "mark_price_stream";

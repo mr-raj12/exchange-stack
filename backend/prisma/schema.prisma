@@ -130,3 +130,12 @@ model FundingPayment {
 
   @@index([userId, market])
 }
+
+model EngineSnapshot {
+  id        String   @id @default(uuid())
+  walCursor String
+  state     Json
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

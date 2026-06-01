@@ -56,3 +56,8 @@ modern ts favours composition over inheritance
 | Extending objects            | ✅    | ✅         |
 | Advanced TS meta-programming | ✅    | ❌         |
 
+
+
+
+
+phase 7 proxy crpa what ws no idea

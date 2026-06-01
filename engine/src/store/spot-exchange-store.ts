@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 import { writeOrder, writeFill, writeBalance, writeOrderbookSnapshot } from "../db/writer.js";
 import { publishUserEvent, publishOrderbookSnapshot } from "../publisher.js";
+import { appendWAL } from "../wal/writer";
 
 class SpotExchangeStore {
   // private balanceStore:BalanceStore
@@ -233,6 +234,7 @@ class SpotExchangeStore {
         bestOrder.status = "PARTIALLY_FILLED";
       }
       writeOrder(bestOrder, "SPOT"); // update maker order status + filledQty
+      appendWAL({ type: "order_fill", exchange: "SPOT", market: input.market, data: bestOrder, timestamp: Date.now() }).catch(console.error);
       // Publish fill events for taker and maker
       publishUserEvent(makerUserId, {
         type: "fill",
@@ -296,6 +298,7 @@ class SpotExchangeStore {
           );
         }
         writeOrder(order, "SPOT");
+        appendWAL({ type: "order_cancelled", exchange: "SPOT", market: input.market, userId: order.userId, data: order, timestamp: Date.now() }).catch(console.error);
         publishUserEvent(order.userId, {
           type: "order_update",
           orderId: order.orderId,
@@ -322,6 +325,7 @@ class SpotExchangeStore {
       });
     }
     writeOrder(order, "SPOT");
+    appendWAL({ type: "order_created", exchange: "SPOT", market: order.market, userId: order.userId, data: order, timestamp: Date.now() }).catch(console.error);
     publishUserEvent(order.userId, {
       type: "order_update",
       orderId: order.orderId,
@@ -350,7 +354,10 @@ class SpotExchangeStore {
       const bal = this.balanceStore.getBalance(userId);
       const lck = this.balanceStore.getLocked(userId);
       for (const asset of [base, quote]) {
-        writeBalance(userId, asset, bal.get(asset) ?? 0, lck.get(asset) ?? 0);
+        const available = bal.get(asset) ?? 0;
+        const locked = lck.get(asset) ?? 0;
+        writeBalance(userId, asset, available, locked);
+        appendWAL({ type: "balance_snapshot", userId, data: { userId, asset, available, locked }, timestamp: Date.now() }).catch(console.error);
       }
     }
   }
@@ -403,6 +410,12 @@ class SpotExchangeStore {
       this.balanceStore.unlock(order.userId, base, amountToUnlock);
     }
     writeOrder(order, "SPOT");
+    appendWAL({ type: "order_cancelled", exchange: "SPOT", market: order.market, userId: order.userId, data: order, timestamp: Date.now() }).catch(console.error);
+    // WAL balance snapshot for the unlock
+    const balMap = this.balanceStore.getBalance(order.userId);
+    const lckMap = this.balanceStore.getLocked(order.userId);
+    const asset = order.side === "buy" ? order.market.split("_")[1]! : order.market.split("_")[0]!;
+    appendWAL({ type: "balance_snapshot", userId: order.userId, data: { userId: order.userId, asset, available: balMap.get(asset) ?? 0, locked: lckMap.get(asset) ?? 0 }, timestamp: Date.now() }).catch(console.error);
     publishUserEvent(order.userId, {
       type: "order_update",
       orderId: order.orderId,
@@ -483,6 +496,42 @@ class SpotExchangeStore {
     // this.balance.set(userId, currentBalance);
     this.balanceStore.credit(userId, asset, amount);
     return this.getUserBalance(userId);
+  }
+
+  serialize(): { orders: SpotOrder[]; orderBooks: Record<string, { bids: SpotOrder[]; asks: SpotOrder[] }> } {
+    const orderBooks: Record<string, { bids: SpotOrder[]; asks: SpotOrder[] }> = {};
+    for (const [k, v] of this.spotOrderBooks) {
+      orderBooks[k] = { bids: [...v.bids], asks: [...v.asks] };
+    }
+    return { orders: Array.from(this.spotOrders.values()), orderBooks };
+  }
+
+  restoreFromSnapshot(data: { orders: SpotOrder[]; orderBooks: Record<string, { bids: SpotOrder[]; asks: SpotOrder[] }> }): void {
+    this.spotOrders.clear();
+    for (const o of data.orders) this.spotOrders.set(o.orderId, o);
+    this.spotOrderBooks.clear();
+    for (const [k, v] of Object.entries(data.orderBooks)) {
+      this.spotOrderBooks.set(k, { bids: [...v.bids], asks: [...v.asks] });
+    }
+  }
+
+  // Set or remove a spot order in internal maps — used during WAL replay.
+  walSetOrder(order: SpotOrder): void {
+    this.spotOrders.set(order.orderId, order);
+    const ob = this.spotOrderBooks.get(order.market)
+      ?? this.spotOrderBooks.get(order.market.split("_")[0]!);
+    if (!ob) return;
+    const sideKey: "bids" | "asks" = order.side === "buy" ? "bids" : "asks";
+    const arr = ob[sideKey];
+    const idx = arr.findIndex((o) => o.orderId === order.orderId);
+    if (idx >= 0) arr.splice(idx, 1);
+    if (order.status === "OPEN" || order.status === "PARTIALLY_FILLED") {
+      arr.push(order);
+      arr.sort((a, b) => {
+        if (a.price === b.price) return a.timestamp - b.timestamp;
+        return order.side === "buy" ? b.price - a.price : a.price - b.price;
+      });
+    }
   }
 }
 
