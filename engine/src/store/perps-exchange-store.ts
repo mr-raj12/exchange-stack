@@ -8,6 +8,7 @@ import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent, writeFundingRate } from "../db/writer.js";
 import { INSURANCE_FUND_USER_ID } from "../constants.js";
+import { publishUserEvent, publishMarketEvent, publishOrderbookSnapshot } from "../publisher.js";
 
 // Input type for order creation — excludes engine-computed fields; reduceOnly is optional (defaults false).
 type CreateOrderInput = Omit<
@@ -31,6 +32,43 @@ class PerpsExchangeStore {
 
   // Tracks the most recent mark price per market (used by settleFunding in Phase 3A)
   private lastMarkPrice = new Map<string, number>();
+
+  private publishPositionEvent(pos: PerpsPosition): void {
+    const markPrice = this.lastMarkPrice.get(pos.market) ?? pos.entryPrice;
+    const unrealizedPnl = pos.status === "OPEN"
+      ? (pos.side === "LONG"
+          ? (markPrice - pos.entryPrice) * pos.size
+          : (pos.entryPrice - markPrice) * pos.size)
+      : 0;
+    publishUserEvent(pos.userId, {
+      type: "position_update",
+      userId: pos.userId,
+      market: pos.market,
+      side: pos.side === "LONG" ? "long" : "short",
+      quantity: pos.size,
+      entryPrice: pos.entryPrice,
+      liquidationPrice: pos.liquidationPrice,
+      unrealizedPnl,
+      margin: pos.margin,
+      leverage: pos.leverage,
+    });
+  }
+
+  private snapshotPerpsOb(market: string): void {
+    const ob = this.perpsOrderBooks.get(market);
+    if (!ob) return;
+    const bidLevels = new Map<number, number>();
+    for (const o of ob.bids) {
+      bidLevels.set(o.price, (bidLevels.get(o.price) ?? 0) + (o.quantity - o.filledQuantity));
+    }
+    const askLevels = new Map<number, number>();
+    for (const o of ob.asks) {
+      askLevels.set(o.price, (askLevels.get(o.price) ?? 0) + (o.quantity - o.filledQuantity));
+    }
+    const bids: [string, string][] = Array.from(bidLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
+    const asks: [string, string][] = Array.from(askLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
+    publishOrderbookSnapshot(market, bids, asks);
+  }
 
   private calculateLiquidationPrice(
     side: "LONG" | "SHORT",
@@ -111,6 +149,7 @@ class PerpsExchangeStore {
       };
       posMap.set(order.userId, newPos);
       writePosition(newPos);
+      this.publishPositionEvent(newPos);
       return;
     }
 
@@ -130,6 +169,7 @@ class PerpsExchangeStore {
         existingPos.leverage,
       );
       writePosition(existingPos);
+      this.publishPositionEvent(existingPos);
       return;
     }
 
@@ -167,6 +207,7 @@ class PerpsExchangeStore {
         this.balanceStore.unlock(order.userId, quote, addedMargin);
       }
       writePosition(existingPos);
+      this.publishPositionEvent(existingPos);
       return;
     }
 
@@ -187,6 +228,7 @@ class PerpsExchangeStore {
       existingPos.status = "CLOSED";
       existingPos.size = 0;
       writePosition(existingPos); // capture closed state before delete
+      this.publishPositionEvent(existingPos);
       posMap.delete(order.userId);
       return;
     }
@@ -215,6 +257,7 @@ class PerpsExchangeStore {
       const closedSnapForDb: PerpsPosition = { ...existingPos, status: "CLOSED", size: 0 };
       posMap.delete(order.userId);
       writePosition(closedSnapForDb);
+      this.publishPositionEvent(closedSnapForDb);
 
       // Open new position in opposite direction (leftover qty)
       const flippedMargin = (priceForMargin * leftoverQty) / order.leverage;
@@ -233,6 +276,7 @@ class PerpsExchangeStore {
       };
       posMap.set(order.userId, flippedPos);
       writePosition(flippedPos);
+      this.publishPositionEvent(flippedPos);
     }
   }
 
@@ -301,6 +345,17 @@ class PerpsExchangeStore {
         );
 
         payments.push({ userId, amount: -actualDeduction, side: "long" }); // negative = paid
+        publishUserEvent(userId, {
+          type: "funding_payment",
+          userId,
+          market,
+          positionSide: "long",
+          amount: -actualDeduction,
+          rate: FUNDING_RATE,
+          markPrice,
+          notionalValue: notional,
+          timestamp: Date.now(),
+        });
       } else {
         // SHORT receives
         pos.margin += payment;
@@ -312,6 +367,17 @@ class PerpsExchangeStore {
         );
 
         payments.push({ userId, amount: payment, side: "short" }); // positive = received
+        publishUserEvent(userId, {
+          type: "funding_payment",
+          userId,
+          market,
+          positionSide: "short",
+          amount: payment,
+          rate: FUNDING_RATE,
+          markPrice,
+          notionalValue: notional,
+          timestamp: Date.now(),
+        });
       }
 
       writePosition(pos);
@@ -328,6 +394,14 @@ class PerpsExchangeStore {
     }
 
     writeFundingRate(market, FUNDING_RATE, markPrice, markPrice, payments);
+    publishMarketEvent(market, {
+      type: "funding_rate",
+      market,
+      rate: FUNDING_RATE,
+      markPrice,
+      indexPrice: markPrice,
+      nextFundingAt: Date.now() + 8 * 60 * 60 * 1000,
+    });
     console.log(`[funding] settled ${market} rate=${FUNDING_RATE} markPrice=${markPrice} positions=${payments.length}`);
   }
 
@@ -361,6 +435,8 @@ class PerpsExchangeStore {
 
     for (const pos of toLiquidate) {
       const { userId, side, size, entryPrice, leverage } = pos;
+      const marginSnapshot = pos.margin;       // capture before fills mutate it
+      const liqPriceSnapshot = pos.liquidationPrice;
       const bankruptcyPrice = this.computeBankruptcyPrice(side, entryPrice, leverage);
 
       // Market order price: 0 for SELL (matches any bid) or MAX for BUY (matches any ask).
@@ -381,14 +457,32 @@ class PerpsExchangeStore {
         }) as PerpsOrder;
       } catch (err) {
         console.error(`[liquidation] order failed for ${userId} ${market}:`, err);
-        this.directSeize(pos, posMap, quote);
+        this.directSeize(pos, posMap, quote, false);
+        publishUserEvent(userId, {
+          type: "liquidation",
+          userId,
+          market,
+          side: side === "LONG" ? "long" : "short",
+          markPrice,
+          liquidationPrice: liqPriceSnapshot,
+          marginLost: marginSnapshot,
+        });
         continue;
       }
 
       if (order.filledQuantity === 0) {
         // Empty book — fall back to direct margin seizure.
         console.warn(`[liquidation] ${userId} ${market}: no liquidity, direct seizure`);
-        this.directSeize(pos, posMap, quote);
+        this.directSeize(pos, posMap, quote, false);
+        publishUserEvent(userId, {
+          type: "liquidation",
+          userId,
+          market,
+          side: side === "LONG" ? "long" : "short",
+          markPrice,
+          liquidationPrice: liqPriceSnapshot,
+          marginLost: marginSnapshot,
+        });
         continue;
       }
 
@@ -443,22 +537,41 @@ class PerpsExchangeStore {
 
       // If only partially filled, seize remaining position margin directly.
       if (pos.status === "OPEN") {
-        this.directSeize(pos, posMap, quote);
+        this.directSeize(pos, posMap, quote, false);
       }
 
+      // Publish ONE LiquidationEvent per liquidated position (regardless of orderbook vs seize path)
+      publishUserEvent(userId, {
+        type: "liquidation",
+        userId,
+        market,
+        side: side === "LONG" ? "long" : "short",
+        markPrice,
+        liquidationPrice: liqPriceSnapshot,
+        marginLost: marginSnapshot,
+      });
+
       console.log(
-        `[liquidation] ${userId} ${market} liqPrice=${pos.liquidationPrice} markPrice=${markPrice}` +
+        `[liquidation] ${userId} ${market} liqPrice=${liqPriceSnapshot} markPrice=${markPrice}` +
         ` fills=${order.fills.length} surplus=${totalSurplus.toFixed(4)}`,
       );
     }
   }
 
-  // Seize remaining position margin directly (empty book or partial fill fallback).
+  // Seize remaining position margin directly (empty book, partial fill fallback, or funding exhaustion).
+  // publishLiquidationEvent=false when called from checkAndLiquidate (it publishes its own event).
   private directSeize(
     pos: PerpsPosition,
     posMap: Map<string, PerpsPosition>,
     quote: string,
+    publishLiquidationEvent: boolean = true,
   ): void {
+    const marginLost = pos.margin;
+    const liqPrice = pos.liquidationPrice;
+    const side = pos.side;
+    const userId = pos.userId;
+    const market = pos.market;
+
     const lockedAmt = this.balanceStore.getLocked(pos.userId).get(quote) ?? 0;
     const toSeize = Math.min(pos.margin, lockedAmt);
     if (toSeize > 0) this.balanceStore.deductLocked(pos.userId, quote, toSeize);
@@ -467,6 +580,18 @@ class PerpsExchangeStore {
     pos.margin = 0;
     posMap.delete(pos.userId);
     writePosition(pos);
+    if (publishLiquidationEvent) {
+      publishUserEvent(userId, {
+        type: "liquidation",
+        userId,
+        market,
+        side: side === "LONG" ? "long" : "short",
+        markPrice: this.lastMarkPrice.get(market) ?? 0,
+        liquidationPrice: liqPrice,
+        marginLost,
+      });
+    }
+    this.publishPositionEvent(pos); // qty=0, margin=0 → signals closed to client
     const bal = this.balanceStore.getBalance(pos.userId);
     const lck = this.balanceStore.getLocked(pos.userId);
     writeBalance(pos.userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
@@ -680,6 +805,39 @@ class PerpsExchangeStore {
           bestOppositeOrder.status = "PARTIALLY_FILLED";
         }
         writeOrder(bestOppositeOrder, "PERPS");
+        // Publish fill events for taker and maker
+        publishUserEvent(order.userId, {
+          type: "fill",
+          orderId: order.orderId,
+          userId: order.userId,
+          market: input.market,
+          side: input.side,
+          price: fill.price,
+          quantity: fill.quantity,
+          fee: 0,
+          timestamp: fill.timestamp,
+        });
+        publishUserEvent(bestOppositeOrder.userId, {
+          type: "fill",
+          orderId: bestOppositeOrder.orderId,
+          userId: bestOppositeOrder.userId,
+          market: input.market,
+          side: bestOppositeOrder.side,
+          price: fill.price,
+          quantity: fill.quantity,
+          fee: 0,
+          timestamp: fill.timestamp,
+        });
+        // Publish maker order update
+        publishUserEvent(bestOppositeOrder.userId, {
+          type: "order_update",
+          orderId: bestOppositeOrder.orderId,
+          userId: bestOppositeOrder.userId,
+          market: input.market,
+          status: bestOppositeOrder.status === "FILLED" ? "filled" : "partially_filled",
+          filledQuantity: bestOppositeOrder.filledQuantity,
+          remainingQuantity: bestOppositeOrder.quantity - bestOppositeOrder.filledQuantity,
+        });
       }
     }
 
@@ -723,6 +881,25 @@ class PerpsExchangeStore {
     }
 
     writeOrder(order, "PERPS");
+    // Skip publishing order updates for liquidation orders — they're system-internal
+    if (!order.isLiquidation) {
+      publishUserEvent(order.userId, {
+        type: "order_update",
+        orderId: order.orderId,
+        userId: order.userId,
+        market: input.market,
+        status: order.status === "FILLED"
+          ? "filled"
+          : order.status === "PARTIALLY_FILLED"
+            ? "partially_filled"
+            : order.status === "CANCELLED" || order.status === "PARTIALLY_CANCELLED"
+              ? "cancelled"
+              : "open",
+        filledQuantity: order.filledQuantity,
+        remainingQuantity: order.quantity - order.filledQuantity,
+      });
+    }
+    this.snapshotPerpsOb(input.market);
     this.flushPerpsBalances(order.userId, affectedMakerIds, quote);
     return order;
   }
@@ -774,6 +951,16 @@ class PerpsExchangeStore {
     }
 
     writeOrder(order, "PERPS");
+    publishUserEvent(order.userId, {
+      type: "order_update",
+      orderId: order.orderId,
+      userId: order.userId,
+      market: order.market,
+      status: "cancelled",
+      filledQuantity: order.filledQuantity,
+      remainingQuantity: order.quantity - order.filledQuantity,
+    });
+    this.snapshotPerpsOb(order.market);
     return order;
   }
 

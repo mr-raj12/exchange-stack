@@ -6,6 +6,7 @@ import type {
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
 import { writeOrder, writeFill, writeBalance } from "../db/writer.js";
+import { publishUserEvent, publishOrderbookSnapshot } from "../publisher.js";
 
 class SpotExchangeStore {
   // private balanceStore:BalanceStore
@@ -33,6 +34,22 @@ class SpotExchangeStore {
       const key = market.split("_")[0]!;
       this.spotOrderBooks.set(key, { bids: [], asks: [] });
     }
+  }
+
+  private snapshotSpotOb(market: string): void {
+    const ob = this.spotOrderBooks.get(market);
+    if (!ob) return;
+    const bidLevels = new Map<number, number>();
+    for (const o of ob.bids) {
+      bidLevels.set(o.price, (bidLevels.get(o.price) ?? 0) + (o.quantity - o.filledQuantity));
+    }
+    const askLevels = new Map<number, number>();
+    for (const o of ob.asks) {
+      askLevels.set(o.price, (askLevels.get(o.price) ?? 0) + (o.quantity - o.filledQuantity));
+    }
+    const bids: [string, string][] = Array.from(bidLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
+    const asks: [string, string][] = Array.from(askLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
+    publishOrderbookSnapshot(market, bids, asks);
   }
 
   //   Omit<Order, "orderId" | "filledQuantity"> means Order se ye do field hta do
@@ -215,6 +232,39 @@ class SpotExchangeStore {
         bestOrder.status = "PARTIALLY_FILLED";
       }
       writeOrder(bestOrder, "SPOT"); // update maker order status + filledQty
+      // Publish fill events for taker and maker
+      publishUserEvent(makerUserId, {
+        type: "fill",
+        orderId: bestOrder.orderId,
+        userId: makerUserId,
+        market: input.market,
+        side: bestOrder.side,
+        price: fill.price,
+        quantity: fill.quantity,
+        fee: 0,
+        timestamp: fill.timestamp,
+      });
+      publishUserEvent(takerUserId, {
+        type: "fill",
+        orderId: order.orderId,
+        userId: takerUserId,
+        market: input.market,
+        side: input.side,
+        price: fill.price,
+        quantity: fill.quantity,
+        fee: 0,
+        timestamp: fill.timestamp,
+      });
+      // Publish maker order update
+      publishUserEvent(makerUserId, {
+        type: "order_update",
+        orderId: bestOrder.orderId,
+        userId: makerUserId,
+        market: input.market,
+        status: bestOrder.status === "FILLED" ? "filled" : "partially_filled",
+        filledQuantity: bestOrder.filledQuantity,
+        remainingQuantity: bestOrder.quantity - bestOrder.filledQuantity,
+      });
       if (order.filledQuantity === order.quantity) {
         order.status = "FILLED";
       } else if (order.filledQuantity > 0) {
@@ -245,6 +295,16 @@ class SpotExchangeStore {
           );
         }
         writeOrder(order, "SPOT");
+        publishUserEvent(order.userId, {
+          type: "order_update",
+          orderId: order.orderId,
+          userId: order.userId,
+          market: input.market,
+          status: "cancelled",
+          filledQuantity: order.filledQuantity,
+          remainingQuantity: order.quantity - order.filledQuantity,
+        });
+        this.snapshotSpotOb(input.market);
         this.flushBalances(order.userId, affectedMakerIds, base, quote);
         return order;
       }
@@ -261,6 +321,20 @@ class SpotExchangeStore {
       });
     }
     writeOrder(order, "SPOT");
+    publishUserEvent(order.userId, {
+      type: "order_update",
+      orderId: order.orderId,
+      userId: order.userId,
+      market: input.market,
+      status: order.status === "FILLED"
+        ? "filled"
+        : order.status === "PARTIALLY_FILLED"
+          ? "partially_filled"
+          : "open",
+      filledQuantity: order.filledQuantity,
+      remainingQuantity: order.quantity - order.filledQuantity,
+    });
+    this.snapshotSpotOb(input.market);
     this.flushBalances(order.userId, affectedMakerIds, base, quote);
     return order;
   }
@@ -328,6 +402,16 @@ class SpotExchangeStore {
       this.balanceStore.unlock(order.userId, base, amountToUnlock);
     }
     writeOrder(order, "SPOT");
+    publishUserEvent(order.userId, {
+      type: "order_update",
+      orderId: order.orderId,
+      userId: order.userId,
+      market: order.market,
+      status: "cancelled",
+      filledQuantity: order.filledQuantity,
+      remainingQuantity: order.quantity - order.filledQuantity,
+    });
+    this.snapshotSpotOb(order.market);
     return order;
   }
 
