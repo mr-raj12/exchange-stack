@@ -5,7 +5,9 @@ export const createOrderSchema = z.object({
     side: z.enum(["buy","sell"]),
     price: z.number().positive(),
     quantity: z.number().positive(),
-    orderType: z.enum(["limit","market"]).default("limit")
+    orderType: z.enum(["limit","market"]).default("limit"),
+    leverage: z.number().positive().max(125).optional().default(1),
+    reduceOnly: z.boolean().optional().default(false),
 });
 
 export const cancelOrderSchema = z.object({

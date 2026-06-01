@@ -1,0 +1,2055 @@
+{
+  "run_at": "2026-05-31T19:06:57Z",
+  "base_url": "http://localhost:3000",
+  "suite": "perps",
+  "summary": {
+    "total": 135,
+    "pass": 133,
+    "fail": 0,
+    "pass_rate": 98.5,
+    "duration_ms": 87634
+  },
+  "tests": [
+    {
+      "name": "GET /health → 200 {ok:true}",
+      "method": "GET",
+      "path": "F:/Git/health",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 208,
+      "response": {
+        "ok": true
+      }
+    },
+    {
+      "name": "POST /signup – user A (long buyer)",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "duration_ms": 1023,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkNjE0NjJiZC1kNGZlLTRlZGYtOGFhZS1lMWVlOTk0ZjQ1MmQiLCJpYXQiOjE3ODAyNTQ0MTksImV4cCI6MTc4MDg1OTIxOSwiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.klSP3k_kolwkHa9YvQCB4Hzqddexz-IrtMRTQDLOXs0",
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "username": "perps_long_1780254417"
+      }
+    },
+    {
+      "name": "POST /signup – user B (short seller)",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "duration_ms": 341,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkYmYwNjA3Zi00MTg0LTQ4NzctYTM2Yi1iZjk2MzI4OWUzOGUiLCJpYXQiOjE3ODAyNTQ0MjAsImV4cCI6MTc4MDg1OTIyMCwiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.6AQm5p2lI9cBiTqqDj-Pbgn7IO4Qc7yT3jknxmShk2Y",
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "username": "perps_short_1780254417"
+      }
+    },
+    {
+      "name": "POST /signup – user C (leverage test)",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "duration_ms": 347,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlNzFhZmY3Zi02ZmRjLTQwMmUtODZlMy02OWZlMDBkZjk0MzQiLCJpYXQiOjE3ODAyNTQ0MjIsImV4cCI6MTc4MDg1OTIyMiwiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.5w_sALH8QfVqRKMAfFPigL3tFN94lt5D0YXSUtLEQyY",
+        "userId": "e71aff7f-6fdc-402e-86e3-69fe00df9434",
+        "username": "perps_lev_1780254417"
+      }
+    },
+    {
+      "name": "POST /signup – fresh user (no position)",
+      "method": "POST",
+      "path": "F:/Git/signup",
+      "expected_status": 201,
+      "actual_status": 201,
+      "passed": true,
+      "duration_ms": 348,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyNDdiNjRiMy1mOTJhLTQ3ZGUtYjMwOS03NDI0MTk1MDI5ZmQiLCJpYXQiOjE3ODAyNTQ0MjIsImV4cCI6MTc4MDg1OTIyMiwiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.iY3YKdiGoj7TKlpuYDdkiTAkQBKbCBd-IMSmCuudo_U",
+        "userId": "247b64b3-f92a-47de-b309-7424195029fd",
+        "username": "perps_fresh_1780254417"
+      }
+    },
+    {
+      "name": "POST /signin – user A",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 339,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkNjE0NjJiZC1kNGZlLTRlZGYtOGFhZS1lMWVlOTk0ZjQ1MmQiLCJpYXQiOjE3ODAyNTQ0MjMsImV4cCI6MTc4MDg1OTIyMywiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.WLtzcxT73lUqjc6r3u4sDPQomSPXyufc3KC_ek37tMA",
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "username": "perps_long_1780254417"
+      }
+    },
+    {
+      "name": "POST /signin – user B",
+      "method": "POST",
+      "path": "F:/Git/signin",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 334,
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkYmYwNjA3Zi00MTg0LTQ4NzctYTM2Yi1iZjk2MzI4OWUzOGUiLCJpYXQiOjE3ODAyNTQ0MjQsImV4cCI6MTc4MDg1OTIyNCwiYXVkIjoibXktYXBwIiwiaXNzIjoibXktYXBpIn0.sxUF0PpEYYhvXFWfwZ6AEKria2UCYzcbA_cAy_zHF7g",
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "username": "perps_short_1780254417"
+      }
+    },
+    {
+      "name": "POST /spot/deposit – fund user A $200k USD",
+      "method": "POST",
+      "path": "F:/Git/spot/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 251,
+      "response": {
+        "USD": 200000
+      }
+    },
+    {
+      "name": "POST /spot/deposit – fund user B $200k USD",
+      "method": "POST",
+      "path": "F:/Git/spot/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 283,
+      "response": {
+        "USD": 200000
+      }
+    },
+    {
+      "name": "POST /spot/deposit – fund user C $200k USD",
+      "method": "POST",
+      "path": "F:/Git/spot/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 307,
+      "response": {
+        "USD": 200000
+      }
+    },
+    {
+      "name": "GET /perps/balance – no Authorization → 401",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 238,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /perps/balance – wrong scheme → 401",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /perps/balance – tampered token → 401",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 162,
+      "response": {
+        "error": "invalid or expired token!"
+      }
+    },
+    {
+      "name": "GET /perps/balance – user A valid → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 224,
+      "response": {
+        "balance": {
+          "USD": 200000
+        },
+        "locked": {}
+      }
+    },
+    {
+      "name": "GET /perps/balance – user B valid → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 226,
+      "response": {
+        "balance": {
+          "USD": 200000
+        },
+        "locked": {}
+      }
+    },
+    {
+      "name": "GET /perps/balance – fresh user (zero bal) → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/balance",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 221,
+      "response": {
+        "balance": {},
+        "locked": {}
+      }
+    },
+    {
+      "name": "Perps balance: user A USD = 200000 (spot deposit funded perps store)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 175,
+      "response": {
+        "expected": "200000",
+        "actual": "200000"
+      }
+    },
+    {
+      "name": "GET /perps/depth/BTC_USD – empty book → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/depth/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 229,
+      "response": {
+        "bids": [],
+        "asks": []
+      }
+    },
+    {
+      "name": "Perps depth bids empty at start",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 148,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Perps depth asks empty at start",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "GET /perps/depth/INVALID – not a perps market → 400",
+      "method": "GET",
+      "path": "F:/Git/perps/depth/INVALID",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 228,
+      "response": {
+        "error": "invalid perps market"
+      }
+    },
+    {
+      "name": "GET /perps/depth/ETH_USD – not in perps → 400",
+      "method": "GET",
+      "path": "F:/Git/perps/depth/ETH_USD",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 256,
+      "response": {
+        "error": "invalid perps market"
+      }
+    },
+    {
+      "name": "GET /perps/depth/btc_usd – lowercase → 400",
+      "method": "GET",
+      "path": "F:/Git/perps/depth/btc_usd",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 219,
+      "response": {
+        "error": "invalid perps market"
+      }
+    },
+    {
+      "name": "POST /perps/order/ – no auth → 401",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 162,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – no auth → 401",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 166,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "GET /perps/order/some-id – no auth → 401",
+      "method": "GET",
+      "path": "F:/Git/perps/order/some-id",
+      "expected_status": 401,
+      "actual_status": 401,
+      "passed": true,
+      "duration_ms": 169,
+      "response": {
+        "error": "missing or malfrmed Authorization header"
+      }
+    },
+    {
+      "name": "POST /perps/order – missing market → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 221,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – empty market → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 198,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – invalid side 'long' → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 220,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – invalid side 'short' → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 168,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – missing side → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 165,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – negative price → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 224,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – zero price → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 165,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – string price → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 184,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Invalid input: expected number, received string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – negative quantity → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 164,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – zero quantity → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 168,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – missing quantity → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 175,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – invalid orderType 'stop' → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 178,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderType"
+            ],
+            "message": "Invalid option: expected one of \"limit\"|\"market\""
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – leverage=0 → 400 (not positive)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 174,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "leverage"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – leverage=-1 → 400 (not positive)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 179,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "leverage"
+            ],
+            "message": "Too small: expected number to be >0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – leverage=string → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 168,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "leverage"
+            ],
+            "message": "Invalid input: expected number, received string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 184,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "side"
+            ],
+            "message": "Invalid option: expected one of \"buy\"|\"sell\""
+          },
+          {
+            "path": [
+              "price"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          },
+          {
+            "path": [
+              "quantity"
+            ],
+            "message": "Invalid input: expected number, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – missing market → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 255,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – empty market → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – missing orderId → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 167,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – empty orderId → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 167,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Too small: expected string to have >=1 characters"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – empty body → 400",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 179,
+      "response": {
+        "error": "validation error",
+        "issues": [
+          {
+            "path": [
+              "market"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "path": [
+              "orderId"
+            ],
+            "message": "Invalid input: expected string, received undefined"
+          }
+        ]
+      }
+    },
+    {
+      "name": "POST /perps/order – invalid market DOGE_USD → HTTP 200 + engine error",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 241,
+      "response": {
+        "error": "invalid market"
+      }
+    },
+    {
+      "name": "Invalid perps market: response contains error key",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 173,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "POST /perps/order – fresh user (0 USD) limit buy → HTTP 200 + engine error",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 244,
+      "response": {
+        "error": "not enough balance to place order"
+      }
+    },
+    {
+      "name": "Insufficient USD: response contains error key",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 152,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Massive order beyond balance: response contains error key",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 160,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Limit sell placed (user B)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 40000,
+        "quantity": 1,
+        "orderType": "limit",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "6c31fb89-be82-4ab8-a7f2-1592e49b3014",
+        "filledQuantity": 0,
+        "fills": [],
+        "status": "OPEN",
+        "timestamp": 1780254458450,
+        "avgPrice": 0,
+        "lockedPricePerUnit": 40000
+      }
+    },
+    {
+      "name": "Depth: resting sell visible in asks",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 154,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Depth: best ask price = 40000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 160,
+      "response": {
+        "expected": "40000",
+        "actual": "40000"
+      }
+    },
+    {
+      "name": "Depth: bids side still empty",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 166,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Crossing limit buy placed (user A)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 41000,
+        "quantity": 1,
+        "orderType": "limit",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "b70f22b6-7411-4cee-8061-0295aa36ef47",
+        "filledQuantity": 1,
+        "fills": [
+          {
+            "makerOrderId": "6c31fb89-be82-4ab8-a7f2-1592e49b3014",
+            "takerOrderId": "b70f22b6-7411-4cee-8061-0295aa36ef47",
+            "price": 40000,
+            "quantity": 1,
+            "timestamp": 1780254460152
+          }
+        ],
+        "status": "FILLED",
+        "timestamp": 1780254460152,
+        "avgPrice": 40000,
+        "lockedPricePerUnit": 41000
+      }
+    },
+    {
+      "name": "Sell order status = FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 173,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Sell order filledQuantity = 1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 171,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Buy order status = FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 156,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Buy order filledQuantity = 1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 149,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Buy order fill price = 40000 (maker)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 150,
+      "response": {
+        "expected": "40000",
+        "actual": "40000"
+      }
+    },
+    {
+      "name": "Depth bids empty after full fill",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 160,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Depth asks empty after full fill",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 185,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "GET /perps/position/BTC_USD – user A has position → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/position/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 243,
+      "response": {
+        "positionId": "f87831b9-ecab-4bbc-889c-b51388facf5c",
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "market": "BTC_USD",
+        "side": "LONG",
+        "size": 1,
+        "leverage": 1,
+        "entryPrice": 40000,
+        "margin": 40000,
+        "liquidationPrice": 0,
+        "status": "OPEN",
+        "timestamp": 1780254460153
+      }
+    },
+    {
+      "name": "User A position: side = LONG",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 152,
+      "response": {
+        "expected": "LONG",
+        "actual": "LONG"
+      }
+    },
+    {
+      "name": "User A position: status = OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 155,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "User A position: market = BTC_USD",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 183,
+      "response": {
+        "expected": "BTC_USD",
+        "actual": "BTC_USD"
+      }
+    },
+    {
+      "name": "User A position: entryPrice = 40000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 158,
+      "response": {
+        "expected": "40000",
+        "actual": "40000"
+      }
+    },
+    {
+      "name": "User A position: margin > 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 150,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "User A position: liquidationPrice >= 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "User A LONG: liquidationPrice < entryPrice",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "GET /perps/positions/ – user A → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/positions/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 317,
+      "response": [
+        {
+          "positionId": "f87831b9-ecab-4bbc-889c-b51388facf5c",
+          "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+          "market": "BTC_USD",
+          "side": "LONG",
+          "size": 1,
+          "leverage": 1,
+          "entryPrice": 40000,
+          "margin": 40000,
+          "liquidationPrice": 0,
+          "status": "OPEN",
+          "timestamp": 1780254460153
+        }
+      ]
+    },
+    {
+      "name": "User A all positions: BTC_USD entry present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 165,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "GET /perps/position/BTC_USD – user B has position → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/position/BTC_USD",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 230,
+      "response": {
+        "positionId": "75024ef5-574e-40b8-929c-5922c4d17c4e",
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "market": "BTC_USD",
+        "side": "SHORT",
+        "size": 1,
+        "leverage": 1,
+        "entryPrice": 40000,
+        "margin": 40000,
+        "liquidationPrice": 80000,
+        "status": "OPEN",
+        "timestamp": 1780254460153
+      }
+    },
+    {
+      "name": "User B position: side = SHORT",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 184,
+      "response": {
+        "expected": "SHORT",
+        "actual": "SHORT"
+      }
+    },
+    {
+      "name": "User B position: status = OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "User B position: entryPrice = 40000",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 164,
+      "response": {
+        "expected": "40000",
+        "actual": "40000"
+      }
+    },
+    {
+      "name": "User B position: margin > 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "User B SHORT: liquidationPrice > entryPrice",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 152,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "GET /perps/position/BTC_USD – fresh user (no position) → 400",
+      "method": "GET",
+      "path": "F:/Git/perps/position/BTC_USD",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 227,
+      "response": {
+        "error": "no position found in market BTC_USD for user 247b64b3-f92a-47de-b309-7424195029fd"
+      }
+    },
+    {
+      "name": "Fresh user: no OPEN position returned",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 180,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "GET /perps/positions/ – fresh user → 200",
+      "method": "GET",
+      "path": "F:/Git/perps/positions/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 220,
+      "response": []
+    },
+    {
+      "name": "GET /perps/position/INVALID – bad market → 400",
+      "method": "GET",
+      "path": "F:/Git/perps/position/INVALID",
+      "expected_status": 400,
+      "actual_status": 400,
+      "passed": true,
+      "duration_ms": 236,
+      "response": {
+        "error": "invalid perps market"
+      }
+    },
+    {
+      "name": "Leverage=5 position: side=SHORT",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 154,
+      "response": {
+        "expected": "SHORT",
+        "actual": "SHORT"
+      }
+    },
+    {
+      "name": "Leverage=5 position: status=OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 158,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "Leverage=5 position: margin > 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 190,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Leverage=5: margin < notional (margin deducted is 1/5 not full amount)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 162,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Leverage=5: margin > 1000 (sanity — at least some fraction of notional)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Leverage=5 sell (user C)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "e71aff7f-6fdc-402e-86e3-69fe00df9434",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 39500,
+        "quantity": 1,
+        "orderType": "limit",
+        "leverage": 5,
+        "reduceOnly": false,
+        "orderId": "5bb26a69-221a-434a-806b-60fa86126ba3",
+        "filledQuantity": 1,
+        "fills": [
+          {
+            "makerOrderId": "ed51874d-8a4d-4471-b878-4089a2d3e30f",
+            "takerOrderId": "5bb26a69-221a-434a-806b-60fa86126ba3",
+            "price": 40000,
+            "quantity": 1,
+            "timestamp": 1780254475512
+          }
+        ],
+        "status": "FILLED",
+        "timestamp": 1780254475512,
+        "avgPrice": 40000,
+        "lockedPricePerUnit": 39500
+      }
+    },
+    {
+      "name": "POST /perps/order – leverage omitted defaults to 1 (reaches engine)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 163,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "POST /perps/order – leverage=100 passes Zod (engine decides limit)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 167,
+      "response": {
+        "expected": "100",
+        "actual": "100"
+      }
+    },
+    {
+      "name": "Cancel test: order initially OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "Cancel test: depth shows the ask",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 154,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Cancel: status = CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 155,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Cancel: filledQuantity = 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Cancel: ask side cleared after cancel",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 161,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Double-cancel: error key present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 166,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Resting sell for cancel test (user B, $50k)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 50000,
+        "quantity": 1,
+        "orderType": "limit",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "85bd1401-95aa-4c92-b5b1-875aa238e768",
+        "filledQuantity": 0,
+        "fills": [],
+        "status": "OPEN",
+        "timestamp": 1780254480391,
+        "avgPrice": 0,
+        "lockedPricePerUnit": 50000
+      }
+    },
+    {
+      "name": "Cancel FILLED order: error key present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 149,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Market buy empty book: CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 157,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Market buy empty book: filledQty=0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 148,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Market buy on empty perps book → CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 999999,
+        "quantity": 1,
+        "orderType": "market",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "b3442c95-52e8-4e53-b221-635c60206114",
+        "filledQuantity": 0,
+        "fills": [],
+        "status": "CANCELLED",
+        "timestamp": 1780254484979,
+        "avgPrice": 0,
+        "lockedPricePerUnit": 0
+      }
+    },
+    {
+      "name": "Market sell empty book: CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 146,
+      "response": {
+        "expected": "CANCELLED",
+        "actual": "CANCELLED"
+      }
+    },
+    {
+      "name": "Market sell empty book: filledQty=0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 152,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Market sell on empty perps book → CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 1,
+        "quantity": 1,
+        "orderType": "market",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "e780d490-c5e6-4a3d-8744-b55aeab38b5c",
+        "filledQuantity": 0,
+        "fills": [],
+        "status": "CANCELLED",
+        "timestamp": 1780254486119,
+        "avgPrice": 0,
+        "lockedPricePerUnit": 0
+      }
+    },
+    {
+      "name": "Market partial: status=PARTIALLY_CANCELLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 155,
+      "response": {
+        "expected": "PARTIALLY_CANCELLED",
+        "actual": "PARTIALLY_CANCELLED"
+      }
+    },
+    {
+      "name": "Market partial: filledQuantity=1",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 173,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Market partial: 1 fill recorded",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 146,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Market buy partial fill → PARTIALLY_CANCELLED",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "d61462bd-d4fe-4edf-8aae-e1ee994f452d",
+        "market": "BTC_USD",
+        "side": "buy",
+        "price": 999999,
+        "quantity": 3,
+        "orderType": "market",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "f76140cb-aa5b-485d-88cf-2e1c97594fb1",
+        "filledQuantity": 1,
+        "fills": [
+          {
+            "makerOrderId": "d6f6cda6-8631-472f-b20d-6249d4736602",
+            "takerOrderId": "f76140cb-aa5b-485d-88cf-2e1c97594fb1",
+            "price": 41000,
+            "quantity": 1,
+            "timestamp": 1780254487562
+          }
+        ],
+        "status": "PARTIALLY_CANCELLED",
+        "timestamp": 1780254487562,
+        "avgPrice": 41000,
+        "lockedPricePerUnit": 41000
+      }
+    },
+    {
+      "name": "Isolation: perps bid visible in perps depth",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 158,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Isolation: spot depth empty (perps order not bleeding in)",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 162,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Isolation: spot order not visible in perps depth",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 158,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "GET /perps/order/nonexistent-uuid → HTTP 200 + engine error",
+      "method": "GET",
+      "path": "F:/Git/perps/order/00000000-0000-0000-0000-000000000000",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 216,
+      "response": {
+        "error": "order not found!"
+      }
+    },
+    {
+      "name": "Get nonexistent perps order: error key present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 189,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "POST /perps/order/cancel – nonexistent orderId → HTTP 200 + engine error",
+      "method": "POST",
+      "path": "F:/Git/perps/order/cancel",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 232,
+      "response": {
+        "error": "order not found!"
+      }
+    },
+    {
+      "name": "Cross-user order access (user A gets user B order)",
+      "method": "GET",
+      "path": "F:/Git/perps/order/6c31fb89-be82-4ab8-a7f2-1592e49b3014",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "error": "order not found!"
+      }
+    },
+    {
+      "name": "Balance accounting: USD decreased after perps trade",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 157,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Status: fresh order is OPEN",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 154,
+      "response": {
+        "expected": "OPEN",
+        "actual": "OPEN"
+      }
+    },
+    {
+      "name": "Status: filledQuantity starts at 0",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "0",
+        "actual": "0"
+      }
+    },
+    {
+      "name": "Status: after 1-of-2 fill → PARTIALLY_FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 167,
+      "response": {
+        "expected": "PARTIALLY_FILLED",
+        "actual": "PARTIALLY_FILLED"
+      }
+    },
+    {
+      "name": "Status: filledQuantity=1 after partial fill",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 159,
+      "response": {
+        "expected": "1",
+        "actual": "1"
+      }
+    },
+    {
+      "name": "Status: after full fill → FILLED",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 167,
+      "response": {
+        "expected": "FILLED",
+        "actual": "FILLED"
+      }
+    },
+    {
+      "name": "Status: filledQuantity=2 when fully filled",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 163,
+      "response": {
+        "expected": "2",
+        "actual": "2"
+      }
+    },
+    {
+      "name": "Status: fills array has at least 1 entry",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 151,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "Status transition test (OPEN→PARTIALLY_FILLED→FILLED)",
+      "method": "POST",
+      "path": "F:/Git/perps/order/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "response": {
+        "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+        "market": "BTC_USD",
+        "side": "sell",
+        "price": 42000,
+        "quantity": 2,
+        "orderType": "limit",
+        "leverage": 1,
+        "reduceOnly": false,
+        "orderId": "0119b2ed-11d9-4a20-978c-33aa2e2f9019",
+        "filledQuantity": 0,
+        "fills": [],
+        "status": "OPEN",
+        "timestamp": 1780254495754,
+        "avgPrice": 0,
+        "lockedPricePerUnit": 42000
+      }
+    },
+    {
+      "name": "POST /spot/deposit – still works after perps activity",
+      "method": "POST",
+      "path": "F:/Git/spot/deposit",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 219,
+      "response": {
+        "USD": 16001
+      }
+    },
+    {
+      "name": "Shared balance: spot==perps USD",
+      "method": "ASSERT",
+      "path": "(balance comparison)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "response": {
+        "spot_USD": "16001",
+        "perps_USD": "16001"
+      }
+    },
+    {
+      "name": "GET /perps/positions/ – user B → 200 (has SHORT position)",
+      "method": "GET",
+      "path": "F:/Git/perps/positions/",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 220,
+      "response": [
+        {
+          "positionId": "df424207-8277-4e46-b5b3-bdfe7173016f",
+          "userId": "dbf0607f-4184-4877-a36b-bf963289e38e",
+          "market": "BTC_USD",
+          "side": "SHORT",
+          "size": 3,
+          "leverage": 1,
+          "entryPrice": 41666.666666666664,
+          "margin": 125000,
+          "liquidationPrice": 83333.33333333333,
+          "status": "OPEN",
+          "timestamp": 1780254487562
+        }
+      ]
+    },
+    {
+      "name": "User B all positions: BTC_USD entry present",
+      "method": "ASSERT",
+      "path": "(body check)",
+      "expected_status": 0,
+      "actual_status": 0,
+      "passed": true,
+      "duration_ms": 152,
+      "response": {
+        "expected": "true",
+        "actual": "true"
+      }
+    },
+    {
+      "name": "GET /db-check – returns user count",
+      "method": "GET",
+      "path": "F:/Git/db-check",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 699,
+      "response": {
+        "users": 68
+      }
+    },
+    {
+      "name": "GET /debug/ping-engine – engine reachable",
+      "method": "GET",
+      "path": "F:/Git/debug/ping-engine",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 194,
+      "response": {
+        "message": "pong from debug ping-engine endpoint"
+      }
+    },
+    {
+      "name": "GET /health – still healthy after full suite",
+      "method": "GET",
+      "path": "F:/Git/health",
+      "expected_status": 200,
+      "actual_status": 200,
+      "passed": true,
+      "duration_ms": 227,
+      "response": {
+        "ok": true
+      }
+    }
+  ]
+}

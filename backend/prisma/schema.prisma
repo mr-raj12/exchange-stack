@@ -14,8 +14,128 @@ datasource db {
 // no url as when using a driver adapter, prisma doesnt need connection string in schema, adapter is what holds the connction
 
 model User {
-  id  String @id @default(uuid()) // @id = Primary Key, and @default(uuid()) = if no valueporvided on insert, generate a uuid v4 (prisma generates uuid in client not in postgres)
-  // alternative @default(dbgenerated("gen_random_uuid()")) == will push it server side  
-  username String @unique // @unique creates unique index 
-  password String
+  id              String           @id @default(uuid())
+  username        String           @unique
+  password        String
+  orders          Order[]
+  positions       Position[]
+  balances        Balance[]
+  fundingPayments FundingPayment[]
+}
+
+model Order {
+  id           String   @id
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  market       String
+  side         String
+  orderType    String
+  price        Decimal  @db.Decimal(20, 8)
+  quantity     Decimal  @db.Decimal(20, 8)
+  filledQty    Decimal  @db.Decimal(20, 8) @default(0)
+  avgFillPrice Decimal? @db.Decimal(20, 8)
+  status       String
+  leverage     Int?
+  reduceOnly   Boolean  @default(false)
+  exchange     String
+  fills        Fill[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Fill {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  price     Decimal  @db.Decimal(20, 8)
+  quantity  Decimal  @db.Decimal(20, 8)
+  makerSide String
+  createdAt DateTime @default(now())
+}
+
+model Position {
+  id               String   @id
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  market           String
+  side             String
+  quantity         Decimal  @db.Decimal(20, 8)
+  entryPrice       Decimal  @db.Decimal(20, 8)
+  liquidationPrice Decimal  @db.Decimal(20, 8)
+  margin           Decimal  @db.Decimal(20, 8)
+  leverage         Int
+  realizedPnl      Decimal  @db.Decimal(20, 8) @default(0)
+  status           String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId, market])
+}
+
+model Balance {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  asset     String
+  available Decimal  @db.Decimal(20, 8) @default(0)
+  locked    Decimal  @db.Decimal(20, 8) @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, asset])
+}
+
+model OrderbookSnapshot {
+  id        String   @id @default(uuid())
+  market    String
+  exchange  String
+  bids      Json
+  asks      Json
+  createdAt DateTime @default(now())
+
+  @@index([market, createdAt])
+}
+
+model InsuranceFundEvent {
+  id        String   @id @default(uuid())
+  market    String
+  amount    Decimal  @db.Decimal(20, 8)
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([market, createdAt])
+}
+
+model FundingRate {
+  id         String           @id @default(uuid())
+  market     String
+  rate       Decimal          @db.Decimal(20, 10)
+  markPrice  Decimal          @db.Decimal(20, 8)
+  indexPrice Decimal          @db.Decimal(20, 8)
+  settledAt  DateTime         @default(now())
+  payments   FundingPayment[]
+
+  @@index([market, settledAt])
+}
+
+model FundingPayment {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  market        String
+  positionSide  String
+  amount        Decimal     @db.Decimal(20, 8)
+  fundingRateId String
+  fundingRate   FundingRate @relation(fields: [fundingRateId], references: [id])
+  settledAt     DateTime    @default(now())
+
+  @@index([userId, market])
+}
+
+model EngineSnapshot {
+  id        String   @id @default(uuid())
+  walCursor String
+  state     Json
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

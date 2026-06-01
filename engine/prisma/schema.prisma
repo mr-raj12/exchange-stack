@@ -1,0 +1,126 @@
+// Engine write-only schema.
+// DO NOT run `prisma migrate` from engine/ — migrations are owned by backend/.
+// Run only: bunx prisma generate
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // no url — PrismaPg driver adapter provides connection at runtime
+}
+
+// No User model — engine never writes to users table.
+// No Prisma relations — userId/orderId are plain FK strings; DB constraints
+// are already created by backend/ migrations.
+
+model Order {
+  id           String   @id
+  userId       String
+  market       String
+  side         String
+  orderType    String
+  price        Decimal  @db.Decimal(20, 8)
+  quantity     Decimal  @db.Decimal(20, 8)
+  filledQty    Decimal  @db.Decimal(20, 8) @default(0)
+  avgFillPrice Decimal? @db.Decimal(20, 8)
+  status       String
+  leverage     Int?
+  reduceOnly   Boolean  @default(false)
+  exchange     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Fill {
+  id        String   @id @default(uuid())
+  orderId   String
+  price     Decimal  @db.Decimal(20, 8)
+  quantity  Decimal  @db.Decimal(20, 8)
+  makerSide String
+  createdAt DateTime @default(now())
+}
+
+model Position {
+  id               String   @id
+  userId           String
+  market           String
+  side             String
+  quantity         Decimal  @db.Decimal(20, 8)
+  entryPrice       Decimal  @db.Decimal(20, 8)
+  liquidationPrice Decimal  @db.Decimal(20, 8)
+  margin           Decimal  @db.Decimal(20, 8)
+  leverage         Int
+  realizedPnl      Decimal  @db.Decimal(20, 8) @default(0)
+  status           String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId, market])
+}
+
+model Balance {
+  id        String   @id @default(uuid())
+  userId    String
+  asset     String
+  available Decimal  @db.Decimal(20, 8) @default(0)
+  locked    Decimal  @db.Decimal(20, 8) @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, asset])
+}
+
+model OrderbookSnapshot {
+  id        String   @id @default(uuid())
+  market    String
+  exchange  String
+  bids      Json
+  asks      Json
+  createdAt DateTime @default(now())
+
+  @@index([market, createdAt])
+}
+
+model InsuranceFundEvent {
+  id        String   @id @default(uuid())
+  market    String
+  amount    Decimal  @db.Decimal(20, 8)
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([market, createdAt])
+}
+
+model FundingRate {
+  id         String   @id @default(uuid())
+  market     String
+  rate       Decimal  @db.Decimal(20, 10)
+  markPrice  Decimal  @db.Decimal(20, 8)
+  indexPrice Decimal  @db.Decimal(20, 8)
+  settledAt  DateTime @default(now())
+
+  @@index([market, settledAt])
+}
+
+model FundingPayment {
+  id            String   @id @default(uuid())
+  userId        String
+  market        String
+  positionSide  String
+  amount        Decimal  @db.Decimal(20, 8)
+  fundingRateId String
+  settledAt     DateTime @default(now())
+
+  @@index([userId, market])
+}
+
+model EngineSnapshot {
+  id        String   @id @default(uuid())
+  walCursor String
+  state     Json
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

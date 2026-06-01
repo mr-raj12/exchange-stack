@@ -13,7 +13,7 @@ export async function createOrder(req:Request, res:Response):Promise<void> {
         const result = await sendToEngine("create_order",{
             userId: req.userId,
             ...parsed.data // spread operator (Take all properties inside parsed.data and copy them here)
-        });
+        }, req.queue);
         res.status(200).json(result);
     } catch (err) {
         res.status(502).json({error:(err as Error).message});
@@ -30,7 +30,7 @@ export async function cancelOrder(req:Request,res:Response):Promise<void> {
         const result = await sendToEngine("cancel_order",{
             userId: req.userId,
             ...parsed.data // spread operator (Take all properties inside parsed.data and copy them here)
-        });
+        }, req.queue);
         res.status(200).json(result);
     } catch (err) {
         res.status(502).json({error:(err as Error).message});
@@ -47,7 +47,7 @@ export async function getOrder(req:Request, res:Response):Promise<void> {
         const result= await sendToEngine("get_order",{
             userId: req.userId,
             orderId: id,
-        })
+        }, req.queue)
         res.status(200).json(result);
     } catch (err) {
         res.status(502).json({error:(err as Error).message});

@@ -8,7 +8,7 @@ export async function getDepth(req:Request,res:Response):Promise<void>{
         return;
     }
     try {
-        const result = await sendToEngine("get_depth",{market});
+        const result = await sendToEngine("get_depth",{market}, req.queue);
         if (result && typeof result === "object" && "error" in result) {
             res.status(400).json(result);
             return;

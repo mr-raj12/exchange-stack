@@ -1,0 +1,64 @@
+# Postgres (Aiven) and Redis (Upstash) are external — not defined here.
+# Each service reads credentials from its own .env file.
+# Copy each service's .env.example → .env and fill in DATABASE_URL / REDIS_URL before running.
+#
+# Startup order (matches PLAN.md §8.2):
+#   engine → mark-price-poller, funding-timer → backend → ws-server, poller
+
+services:
+
+  engine:
+    build:
+      context: .
+      dockerfile: engine/Dockerfile
+    env_file: ./engine/.env
+    restart: unless-stopped
+
+  mark-price-poller:
+    build:
+      context: .
+      dockerfile: mark-price-poller/Dockerfile
+    env_file: ./mark-price-poller/.env
+    restart: unless-stopped
+    depends_on:
+      - engine
+
+  funding-timer:
+    build:
+      context: .
+      dockerfile: funding-timer/Dockerfile
+    env_file: ./funding-timer/.env
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: ./backend/.env
+    environment:
+      # Override per replica in k8s / multi-instance setups.
+      # docker compose scale backend=N will need unique IDs — set via HOSTNAME or an ordinal.
+      BACKEND_INSTANCE_ID: backend-1
+    restart: unless-stopped
+    depends_on:
+      - engine
+
+  ws-server:
+    build:
+      context: .
+      dockerfile: ws-server/Dockerfile
+    ports:
+      - "4000:4000"
+    env_file: ./ws-server/.env
+    restart: unless-stopped
+
+  poller:
+    build:
+      context: .
+      dockerfile: poller/Dockerfile
+    env_file: ./poller/.env
+    restart: unless-stopped
+    depends_on:
+      - engine
