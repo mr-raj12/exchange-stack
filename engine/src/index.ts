@@ -5,6 +5,7 @@ import {
   SPOT_INCOMING_STREAM,
   PERPS_INCOMING_STREAM,
   MARK_PRICE_STREAM,
+  FUNDING_RATE_STREAM,
   ENGINE_CONSUMER_GROUP,
   ENGINE_CONSUMER_NAME,
   backendResponseChannel,
@@ -21,7 +22,7 @@ function fieldsToObject(fields: string[]): Record<string, string> {
 }
 
 async function ensureConsumerGroups() {
-  for (const stream of [SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM]) {
+  for (const stream of [SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM, FUNDING_RATE_STREAM]) {
     try {
       await redis.xgroup("CREATE", stream, ENGINE_CONSUMER_GROUP, "0", "MKSTREAM");
     } catch (e: any) {
@@ -96,8 +97,8 @@ async function main(): Promise<void> {
         "COUNT", "10",
         "BLOCK", "0",
         "STREAMS",
-        SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM,
-        ">", ">", ">",
+        SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM, FUNDING_RATE_STREAM,
+        ">", ">", ">", ">",
       )) as [string, [string, string[]][]][] | null;
       if (!results) continue;
 
@@ -108,6 +109,10 @@ async function main(): Promise<void> {
           if (streamName === MARK_PRICE_STREAM) {
             processMarkPrice(raw);
             await redis.xack(MARK_PRICE_STREAM, ENGINE_CONSUMER_GROUP, msgId);
+          } else if (streamName === FUNDING_RATE_STREAM) {
+            const market = raw["market"];
+            if (market) perpsExchangeStore.settleFunding(market);
+            await redis.xack(FUNDING_RATE_STREAM, ENGINE_CONSUMER_GROUP, msgId);
           } else {
             await processOrderMessage(streamName, msgId, raw);
           }

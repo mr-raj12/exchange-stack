@@ -44,7 +44,11 @@
       "Bash(Get-Process -Name \"bun\" -ErrorAction SilentlyContinue)",
       "Bash(Select-Object Id, ProcessName, CPU)",
       "Bash(git -C \"g:/s30/cex-v2\" diff --staged --stat)",
-      "Bash(git -C \"g:/s30/cex-v2\" diff --staged --name-only)"
+      "Bash(git -C \"g:/s30/cex-v2\" diff --staged --name-only)",
+      "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\\\\backend\" -Depth 2)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Remove-Item *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Mrityunjay Raj"

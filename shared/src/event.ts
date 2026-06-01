@@ -72,5 +72,27 @@ export interface ADLEvent {
   shortfall: number;
 }
 
-export type UserEvent   = FillEvent | OrderUpdateEvent | PositionUpdateEvent | LiquidationEvent | ADLEvent;
-export type MarketEvent = OrderbookSnapshotEvent | MarkPriceEvent;
+export interface FundingPaymentEvent {
+  type: "funding_payment";
+  userId: string;
+  market: string;
+  positionSide: "long" | "short";
+  /** Positive = received, negative = paid */
+  amount: number;
+  rate: number;
+  markPrice: number;
+  notionalValue: number;
+  timestamp: number;
+}
+
+export interface FundingRateAnnouncementEvent {
+  type: "funding_rate";
+  market: string;
+  rate: number;
+  markPrice: number;
+  indexPrice: number;
+  nextFundingAt: number;
+}
+
+export type UserEvent   = FillEvent | OrderUpdateEvent | PositionUpdateEvent | LiquidationEvent | ADLEvent | FundingPaymentEvent;
+export type MarketEvent = OrderbookSnapshotEvent | MarkPriceEvent | FundingRateAnnouncementEvent;

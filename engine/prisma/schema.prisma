@@ -92,3 +92,26 @@ model InsuranceFundEvent {
 
   @@index([market, createdAt])
 }
+
+model FundingRate {
+  id         String   @id @default(uuid())
+  market     String
+  rate       Decimal  @db.Decimal(20, 10)
+  markPrice  Decimal  @db.Decimal(20, 8)
+  indexPrice Decimal  @db.Decimal(20, 8)
+  settledAt  DateTime @default(now())
+
+  @@index([market, settledAt])
+}
+
+model FundingPayment {
+  id            String   @id @default(uuid())
+  userId        String
+  market        String
+  positionSide  String
+  amount        Decimal  @db.Decimal(20, 8)
+  fundingRateId String
+  settledAt     DateTime @default(now())
+
+  @@index([userId, market])
+}

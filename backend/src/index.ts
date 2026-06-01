@@ -7,6 +7,7 @@ import { sendToEngine, initBroker } from "./utils/broker.js";
 import { spotOrderRouter,perpsOrderRouter } from "./routes/order-route.js";
 import { spotMarketRouter,perpsMarketRouter } from "./routes/market-route.js";
 import { spotUserRouter,perpsUserRouter } from "./routes/user-route.js";
+import { perpsFundingRouter } from "./routes/funding-route.js";
 import { addQueueProps } from "./middleware/spotOrPerps.js";
 
 const app=express(); // // app is a fancy router+middleware pipeline+listener wrapper
@@ -26,6 +27,7 @@ app.use("/spot", spotUserRouter);
 /// perps inside function not implmented
 app.use("/perps/order",perpsOrderRouter);
 app.use("/perps/depth", perpsMarketRouter);
+app.use("/perps/funding", perpsFundingRouter);
 app.use("/perps", perpsUserRouter);
 
 

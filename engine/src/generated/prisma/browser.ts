@@ -47,3 +47,13 @@ export type OrderbookSnapshot = Prisma.OrderbookSnapshotModel
  * 
  */
 export type InsuranceFundEvent = Prisma.InsuranceFundEventModel
+/**
+ * Model FundingRate
+ * 
+ */
+export type FundingRate = Prisma.FundingRateModel
+/**
+ * Model FundingPayment
+ * 
+ */
+export type FundingPayment = Prisma.FundingPaymentModel

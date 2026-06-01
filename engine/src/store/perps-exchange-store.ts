@@ -6,7 +6,7 @@ import type {
 } from "../types/perps-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
-import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent } from "../db/writer.js";
+import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent, writeFundingRate } from "../db/writer.js";
 import { INSURANCE_FUND_USER_ID } from "../constants.js";
 
 // Input type for order creation — excludes engine-computed fields; reduceOnly is optional (defaults false).
@@ -252,6 +252,83 @@ class PerpsExchangeStore {
   public updateMarkPrice(market: string, price: number): void {
     this.lastMarkPrice.set(market, price);
     this.checkAndLiquidate(market, price);
+  }
+
+  // --------------------------------------------------------------------------
+  // settleFunding
+  //
+  // Called when the engine receives a funding_rate_stream trigger. Applies the
+  // funding rate to every open position: longs pay, shorts receive (rate > 0).
+  // Deducts or credits margin + balance accordingly; positions whose margin
+  // hits zero are directly seized rather than relying on liquidationPrice.
+  //
+  // v1: fixed FUNDING_RATE = 0.01% per interval. v2 can derive from premium index.
+  // --------------------------------------------------------------------------
+  public settleFunding(market: string): void {
+    const markPrice = this.lastMarkPrice.get(market);
+    if (!markPrice) {
+      console.warn(`[funding] no mark price cached for ${market}, skipping settlement`);
+      return;
+    }
+
+    const posMap = this.perpsPosition.get(market);
+    if (!posMap || posMap.size === 0) return;
+
+    const quote = market.split("_")[1]!;
+    const FUNDING_RATE = 0.0001; // 0.01% per 8h — fixed v1 baseline
+
+    const payments: { userId: string; amount: number; side: string }[] = [];
+    const toSeize: PerpsPosition[] = [];
+
+    for (const [userId, pos] of posMap) {
+      if (pos.status !== "OPEN") continue;
+
+      const notional = pos.size * markPrice;
+      // payment > 0 → LONG pays this amount; SHORT receives this amount
+      const payment = notional * FUNDING_RATE;
+
+      if (pos.side === "LONG") {
+        const actualDeduction = Math.min(payment, pos.margin);
+        pos.margin -= actualDeduction;
+
+        const lockedAmt = this.balanceStore.getLocked(userId).get(quote) ?? 0;
+        const toDeduct = Math.min(actualDeduction, lockedAmt);
+        if (toDeduct > 0) this.balanceStore.deductLocked(userId, quote, toDeduct);
+
+        writeBalance(userId, quote,
+          this.balanceStore.getBalance(userId).get(quote) ?? 0,
+          this.balanceStore.getLocked(userId).get(quote) ?? 0,
+        );
+
+        payments.push({ userId, amount: -actualDeduction, side: "long" }); // negative = paid
+      } else {
+        // SHORT receives
+        pos.margin += payment;
+        this.balanceStore.credit(userId, quote, payment);
+
+        writeBalance(userId, quote,
+          this.balanceStore.getBalance(userId).get(quote) ?? 0,
+          this.balanceStore.getLocked(userId).get(quote) ?? 0,
+        );
+
+        payments.push({ userId, amount: payment, side: "short" }); // positive = received
+      }
+
+      writePosition(pos);
+
+      if (pos.margin <= 0) {
+        toSeize.push(pos);
+      }
+    }
+
+    // Seize positions whose margin was fully consumed by funding (outside the loop to avoid mutation mid-iteration)
+    for (const pos of toSeize) {
+      console.warn(`[funding] ${pos.userId} ${market}: margin exhausted by funding, seizing position`);
+      this.directSeize(pos, posMap, quote);
+    }
+
+    writeFundingRate(market, FUNDING_RATE, markPrice, markPrice, payments);
+    console.log(`[funding] settled ${market} rate=${FUNDING_RATE} markPrice=${markPrice} positions=${payments.length}`);
   }
 
   // --------------------------------------------------------------------------

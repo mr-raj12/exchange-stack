@@ -126,6 +126,37 @@ export function writeInsuranceFundEvent(
   );
 }
 
+// Write a funding settlement: one FundingRate row + one FundingPayment per position.
+export function writeFundingRate(
+  market: string,
+  rate: number,
+  markPrice: number,
+  indexPrice: number,
+  payments: { userId: string; amount: number; side: string }[],
+): void {
+  enqueueWrite(async () => {
+    const rateRow = await prisma.fundingRate.create({
+      data: {
+        market,
+        rate: String(rate),
+        markPrice: String(markPrice),
+        indexPrice: String(indexPrice),
+      },
+    });
+    if (payments.length > 0) {
+      await prisma.fundingPayment.createMany({
+        data: payments.map((p) => ({
+          userId: p.userId,
+          market,
+          positionSide: p.side,
+          amount: String(p.amount),
+          fundingRateId: rateRow.id,
+        })),
+      });
+    }
+  });
+}
+
 // Snapshot current available + locked for a user/asset after a fill settles.
 export function writeBalance(userId: string, asset: string, available: number, locked: number): void {
   enqueueWrite(() =>

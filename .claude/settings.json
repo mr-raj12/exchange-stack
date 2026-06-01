@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(netstat -ano)",
+      "Bash(bun run *)",
+      "Bash(echo \"engine PID: $!\")",
+      "Bash(echo \"backend PID: $!\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" http://localhost:3000/health)",
+      "Bash(bash test-perps.sh)",
+      "Bash(curl -s http://localhost:3000/db-check)",
+      "Bash(curl -s --max-time 5 -w \"\\\\nHTTP %{http_code}\" http://localhost:3000/db-check)",
+      "Bash(pkill -f \"bun run --watch\")",
+      "Bash(pkill -f \"bun run src/index.ts\")",
+      "Bash(pkill -f \"bash test-perps.sh\")",
+      "Bash(bun run dev > /tmp/backend.log 2>&1 & *)",
+      "Bash(pkill -f \"bash test-perps\")",
+      "Bash(echo \"engine: $!\")",
+      "Bash(echo \"backend: $!\")",
+      "Bash(bun -e ' *)",
+      "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\\\\backend\\\\src\\\\\" -Recurse | Select-Object FullName | ConvertTo-Csv -NoTypeInformation | Out-String)",
+      "Bash(bun tsc *)",
+      "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\" -Depth 2)",
+      "Bash(Format-Table FullName)",
+      "PowerShell(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\" | Select-Object Name, @{Name=\"Type\"; Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}} | Format-Table -AutoSize)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(bunx prisma *)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes reset it\" bunx prisma migrate reset --force)",
+      "Bash(bun install *)",
+      "Bash(bunx tsc *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}
