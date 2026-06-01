@@ -14,6 +14,9 @@ export interface PerpsOrder {
   orderType: OrderType;
   /** If true, order may only reduce an existing position, never open or increase one. */
   reduceOnly: boolean;
+  /** If true, order is placed by the liquidation engine on behalf of a user being liquidated.
+   *  Bypasses margin checks and balance locks — position margin is already locked. */
+  isLiquidation?: boolean;
   status: OrderStatus;
   fills: Fill[];
   timestamp: number;

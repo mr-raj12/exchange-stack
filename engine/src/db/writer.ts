@@ -113,6 +113,19 @@ export function writePosition(position: PerpsPosition): void {
   );
 }
 
+// Record an insurance fund inflow (positive) or outflow (negative).
+export function writeInsuranceFundEvent(
+  market: string,
+  amount: number,
+  reason: "liquidation_surplus" | "liquidation_deficit" | "adl",
+): void {
+  enqueueWrite(() =>
+    prisma.insuranceFundEvent.create({
+      data: { market, amount: String(amount), reason },
+    }).then(() => {})
+  );
+}
+
 // Snapshot current available + locked for a user/asset after a fill settles.
 export function writeBalance(userId: string, asset: string, available: number, locked: number): void {
   enqueueWrite(() =>

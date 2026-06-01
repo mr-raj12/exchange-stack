@@ -58,7 +58,7 @@ function processMarkPrice(raw: Record<string, string>): void {
   const market = raw["market"];
   const price = Number(raw["price"]);
   if (!market || !price || isNaN(price)) return;
-  perpsExchangeStore.checkAndLiquidate(market, price);
+  perpsExchangeStore.updateMarkPrice(market, price);
 }
 
 async function drainPending() {

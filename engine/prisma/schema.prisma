@@ -82,3 +82,13 @@ model OrderbookSnapshot {
 
   @@index([market, createdAt])
 }
+
+model InsuranceFundEvent {
+  id        String   @id @default(uuid())
+  market    String
+  amount    Decimal  @db.Decimal(20, 8)
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([market, createdAt])
+}

@@ -6,7 +6,8 @@ import type {
 } from "../types/perps-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
-import { writeOrder, writeFill, writePosition, writeBalance } from "../db/writer.js";
+import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent } from "../db/writer.js";
+import { INSURANCE_FUND_USER_ID } from "../constants.js";
 
 // Input type for order creation — excludes engine-computed fields; reduceOnly is optional (defaults false).
 type CreateOrderInput = Omit<
@@ -28,6 +29,9 @@ class PerpsExchangeStore {
 
   private static readonly MAX_LEVERAGE = 125;
 
+  // Tracks the most recent mark price per market (used by settleFunding in Phase 3A)
+  private lastMarkPrice = new Map<string, number>();
+
   private calculateLiquidationPrice(
     side: "LONG" | "SHORT",
     entryPrice: number,
@@ -38,6 +42,18 @@ class PerpsExchangeStore {
     } else {
       return entryPrice * (1 + 1 / leverage);
     }
+  }
+
+  private computeBankruptcyPrice(
+    side: "LONG" | "SHORT",
+    entryPrice: number,
+    leverage: number,
+  ): number {
+    // Bankruptcy price = price at which margin = 0.
+    // In our model liq_price == bankruptcy_price (no maintenance margin buffer).
+    return side === "LONG"
+      ? entryPrice * (1 - 1 / leverage)
+      : entryPrice * (1 + 1 / leverage);
   }
 
   private initializePerpsOrderBooksAndPositions() {
@@ -72,7 +88,7 @@ class PerpsExchangeStore {
     //   • For limit/market buys: fill ≤ lockedPrice → min = fillPrice ✓
     //   • For limit sells:       fill ≥ lockedPrice → min = lockedPrice ✓  (no delta to release)
     //   • For market sells:      fill ≤ bestBid (= lockedPrice) → min = fillPrice ✓
-    //   • For reduce-only:       lockedPrice = 0 → addedMargin = 0 (no new margin) ✓
+    //   • For reduce-only / liquidation: lockedPrice = 0 → addedMargin = 0 (no new margin) ✓
     const priceForMargin = Math.min(order.lockedPricePerUnit, fillPrice);
     const addedMargin = (priceForMargin * fillQty) / order.leverage;
 
@@ -147,7 +163,7 @@ class PerpsExchangeStore {
 
       this.balanceStore.deductLocked(order.userId, quote, releasedMargin);
       this.balanceStore.credit(order.userId, quote, net);
-      if (!order.reduceOnly) {
+      if (!order.reduceOnly && !order.isLiquidation) {
         this.balanceStore.unlock(order.userId, quote, addedMargin);
       }
       writePosition(existingPos);
@@ -164,7 +180,7 @@ class PerpsExchangeStore {
 
       this.balanceStore.deductLocked(order.userId, quote, existingPos.margin);
       this.balanceStore.credit(order.userId, quote, net);
-      if (!order.reduceOnly) {
+      if (!order.reduceOnly && !order.isLiquidation) {
         this.balanceStore.unlock(order.userId, quote, addedMargin);
       }
 
@@ -192,7 +208,7 @@ class PerpsExchangeStore {
 
       // Release closing portion of the order's locked margin
       const closingPortionMargin = (priceForMargin * closingQty) / order.leverage;
-      if (!order.reduceOnly) {
+      if (!order.reduceOnly && !order.isLiquidation) {
         this.balanceStore.unlock(order.userId, quote, closingPortionMargin);
       }
 
@@ -229,26 +245,163 @@ class PerpsExchangeStore {
     this.updatePositionFromFill(makerOrder, fill.price, fill.quantity);
   }
 
-  public checkAndLiquidate(market: string, markPrice: number) {
-    const toLiquidate: PerpsPosition[] = [];
+  // --------------------------------------------------------------------------
+  // updateMarkPrice — stores last mark price and triggers liquidation check.
+  // Called from engine/src/index.ts on every MARK_PRICE_STREAM message.
+  // --------------------------------------------------------------------------
+  public updateMarkPrice(market: string, price: number): void {
+    this.lastMarkPrice.set(market, price);
+    this.checkAndLiquidate(market, price);
+  }
+
+  // --------------------------------------------------------------------------
+  // checkAndLiquidate
+  //
+  // For each position whose liquidation price was crossed by markPrice, places
+  // a real market order through the orderbook (proper price discovery). Falls
+  // back to direct margin seizure when the book is empty.
+  //
+  // After each fill batch: routes surplus above bankruptcy price to the
+  // insurance fund; draws deficits from the insurance fund; triggers ADL stub
+  // when the fund is exhausted.
+  // --------------------------------------------------------------------------
+  public checkAndLiquidate(market: string, markPrice: number): void {
     const posMap = this.perpsPosition.get(market);
-    for (const pos of posMap!.values()) {
-      if (pos.side === "LONG") {
-        if (markPrice <= pos.liquidationPrice) toLiquidate.push(pos);
-      } else {
-        if (markPrice >= pos.liquidationPrice) toLiquidate.push(pos);
-      }
-    }
+    if (!posMap) return;
+
     const quote = market.split("_")[1]!;
-    for (const pos of toLiquidate) {
-      pos.status = "LIQUIDATED";
-      pos.size = 0;
-      const available = this.balanceStore.getLocked(pos.userId).get(quote) ?? 0;
-      const toSeize = Math.min(pos.margin, available);
-      if (toSeize > 0) this.balanceStore.deductLocked(pos.userId, quote, toSeize);
-      pos.margin = 0;
-      posMap!.delete(pos.userId);
+
+    // Collect first — modifying posMap while iterating is unsafe.
+    const toLiquidate: PerpsPosition[] = [];
+    for (const pos of posMap.values()) {
+      if (pos.status !== "OPEN") continue;
+      const crosses =
+        pos.side === "LONG"
+          ? markPrice <= pos.liquidationPrice
+          : markPrice >= pos.liquidationPrice;
+      if (crosses) toLiquidate.push(pos);
     }
+
+    for (const pos of toLiquidate) {
+      const { userId, side, size, entryPrice, leverage } = pos;
+      const bankruptcyPrice = this.computeBankruptcyPrice(side, entryPrice, leverage);
+
+      // Market order price: 0 for SELL (matches any bid) or MAX for BUY (matches any ask).
+      const liquidationSide: "buy" | "sell" = side === "LONG" ? "sell" : "buy";
+      const liquidationOrderPrice = side === "LONG" ? 0 : Number.MAX_SAFE_INTEGER;
+
+      let order: PerpsOrder;
+      try {
+        order = this.createPerpsOrder({
+          userId,
+          market,
+          side: liquidationSide,
+          orderType: "market",
+          price: liquidationOrderPrice,
+          quantity: size,
+          leverage,
+          isLiquidation: true,
+        }) as PerpsOrder;
+      } catch (err) {
+        console.error(`[liquidation] order failed for ${userId} ${market}:`, err);
+        this.directSeize(pos, posMap, quote);
+        continue;
+      }
+
+      if (order.filledQuantity === 0) {
+        // Empty book — fall back to direct margin seizure.
+        console.warn(`[liquidation] ${userId} ${market}: no liquidity, direct seizure`);
+        this.directSeize(pos, posMap, quote);
+        continue;
+      }
+
+      // -----------------------------------------------------------------------
+      // Insurance fund: route surplus / deficit from fills vs bankruptcy price.
+      // -----------------------------------------------------------------------
+      let totalSurplus = 0;
+      for (const fill of order.fills) {
+        // surplus > 0 → fill was better than bankruptcy (inflow to fund)
+        // surplus < 0 → fill was worse than bankruptcy (outflow from fund)
+        const surplusPerUnit =
+          side === "LONG" ? fill.price - bankruptcyPrice : bankruptcyPrice - fill.price;
+        totalSurplus += surplusPerUnit * fill.quantity;
+      }
+
+      if (totalSurplus > 0) {
+        // Fill happened at a better price than bankruptcy — surplus goes to insurance fund.
+        // updatePositionFromFill already credited the user with `net` which includes this surplus.
+        // We transfer it out of the user's available balance into the fund.
+        try {
+          this.balanceStore.lock(userId, quote, totalSurplus);
+          this.balanceStore.deductLocked(userId, quote, totalSurplus);
+          this.balanceStore.credit(INSURANCE_FUND_USER_ID, quote, totalSurplus);
+          writeInsuranceFundEvent(market, totalSurplus, "liquidation_surplus");
+          // Re-snapshot Alice's balance after surplus transfer
+          const bal = this.balanceStore.getBalance(userId);
+          const lck = this.balanceStore.getLocked(userId);
+          writeBalance(userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
+        } catch {
+          console.warn(`[liquidation] surplus routing failed for ${userId} — keeping in user balance`);
+        }
+      } else if (totalSurplus < 0) {
+        // Fill happened worse than bankruptcy — deficit absorbed by insurance fund.
+        const deficit = -totalSurplus;
+        const fundBal = this.balanceStore.getBalance(INSURANCE_FUND_USER_ID).get(quote) ?? 0;
+        const toDraw = Math.min(deficit, fundBal);
+
+        if (toDraw > 0) {
+          this.balanceStore.lock(INSURANCE_FUND_USER_ID, quote, toDraw);
+          this.balanceStore.deductLocked(INSURANCE_FUND_USER_ID, quote, toDraw);
+          this.balanceStore.credit(userId, quote, toDraw);
+          writeInsuranceFundEvent(market, -toDraw, "liquidation_deficit");
+          const bal = this.balanceStore.getBalance(userId);
+          const lck = this.balanceStore.getLocked(userId);
+          writeBalance(userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
+        }
+
+        if (toDraw < deficit) {
+          this.triggerADL(market, side === "LONG" ? "SHORT" : "LONG", deficit - toDraw);
+        }
+      }
+
+      // If only partially filled, seize remaining position margin directly.
+      if (pos.status === "OPEN") {
+        this.directSeize(pos, posMap, quote);
+      }
+
+      console.log(
+        `[liquidation] ${userId} ${market} liqPrice=${pos.liquidationPrice} markPrice=${markPrice}` +
+        ` fills=${order.fills.length} surplus=${totalSurplus.toFixed(4)}`,
+      );
+    }
+  }
+
+  // Seize remaining position margin directly (empty book or partial fill fallback).
+  private directSeize(
+    pos: PerpsPosition,
+    posMap: Map<string, PerpsPosition>,
+    quote: string,
+  ): void {
+    const lockedAmt = this.balanceStore.getLocked(pos.userId).get(quote) ?? 0;
+    const toSeize = Math.min(pos.margin, lockedAmt);
+    if (toSeize > 0) this.balanceStore.deductLocked(pos.userId, quote, toSeize);
+    pos.status = "LIQUIDATED";
+    pos.size = 0;
+    pos.margin = 0;
+    posMap.delete(pos.userId);
+    writePosition(pos);
+    const bal = this.balanceStore.getBalance(pos.userId);
+    const lck = this.balanceStore.getLocked(pos.userId);
+    writeBalance(pos.userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
+  }
+
+  // ADL stub — logs shortfall; full implementation deferred to a later phase.
+  private triggerADL(market: string, side: "LONG" | "SHORT", shortfall: number): void {
+    console.warn(
+      `[ADL] ${market} ${side} shortfall=${shortfall.toFixed(4)} USDT` +
+      ` — insurance fund exhausted; ADL stub (no positions deleveraged)`,
+    );
+    writeInsuranceFundEvent(market, -shortfall, "adl");
   }
 
   // --------------------------------------------------------------------------
@@ -296,18 +449,28 @@ class PerpsExchangeStore {
   // Fix 2: lockedPricePerUnit (market sell uses best-bid; unified delta unlock
   //         for both sides; maker also gets delta unlock).
   // Fix 3: self-trade prevention.
+  // Liquidation bypass: isLiquidation=true skips margin checks and lock/unlock.
   // --------------------------------------------------------------------------
   createPerpsOrder(input: CreateOrderInput): unknown {
-    this.checksForCreateOrder(input);
+    const isLiquidation = input.isLiquidation ?? false;
+
+    // Liquidation orders skip all pre-flight checks — position was already validated
+    // when it was opened, and the engine has authority to close it at any price.
+    if (!isLiquidation) {
+      this.checksForCreateOrder(input);
+    }
 
     const quote = input.market.split("_")[1]!;
     const ob = this.perpsOrderBooks.get(input.market) || { bids: [], asks: [] };
 
     // Fix 2: determine locked price per unit.
+    // Liquidation orders lock nothing (position margin is already locked).
     // Market SELL → lock margin at best bid (actual exposure), not input.price (=floor).
     // All other orders → lock at input.price (cap for buys, floor for limit sells).
     let lockedPricePerUnit: number;
-    if (input.reduceOnly) {
+    if (isLiquidation) {
+      lockedPricePerUnit = 0;
+    } else if (input.reduceOnly) {
       lockedPricePerUnit = 0; // reduce-only locks no new margin
     } else if (input.orderType === "market" && input.side === "sell") {
       // Lock at best bid; if book empty → 0 so balance check passes and order cancels immediately
@@ -319,11 +482,11 @@ class PerpsExchangeStore {
       lockedPricePerUnit = input.price;
     }
 
-    const requiredMargin = input.reduceOnly
+    const requiredMargin = isLiquidation || input.reduceOnly
       ? 0
       : (lockedPricePerUnit * input.quantity) / input.leverage;
 
-    if (!input.reduceOnly) {
+    if (!isLiquidation && !input.reduceOnly) {
       const userCurrBal = this.balanceStore.getBalance(input.userId).get(quote);
       if (!userCurrBal || userCurrBal < requiredMargin) {
         throw new Error("not enough balance to place order");
@@ -345,9 +508,10 @@ class PerpsExchangeStore {
       avgPrice: 0,
       lockedPricePerUnit,
       reduceOnly: input.reduceOnly ?? false,
+      isLiquidation,
     };
 
-    if (!order.reduceOnly) {
+    if (!isLiquidation && !order.reduceOnly) {
       this.balanceStore.lock(input.userId, quote, requiredMargin);
     }
 
@@ -409,8 +573,9 @@ class PerpsExchangeStore {
         // Fix 2: unified delta unlock for the TAKER.
         // delta = excess margin locked above actual fill cost.
         // Positive for: limit buys (fill < cap), market buys (fill << 999999), market sells (fill < bestBid).
-        // Zero for: limit sells (fill >= limit → no excess to release).
-        if (!order.reduceOnly) {
+        // Zero / negative for: limit sells (fill >= limit → no excess to release).
+        // Liquidation orders have lockedPricePerUnit = 0 → takerDelta always ≤ 0 → no unlock.
+        if (!order.reduceOnly && !order.isLiquidation) {
           const takerDelta =
             ((order.lockedPricePerUnit - fillPrice) * fillQty) / order.leverage;
           if (takerDelta > 0) {
@@ -420,7 +585,7 @@ class PerpsExchangeStore {
 
         // Fix 2: also apply delta unlock to the MAKER.
         // Makers (limit buys) can have excess locked when fill < their limit price.
-        if (!bestOppositeOrder.reduceOnly) {
+        if (!bestOppositeOrder.reduceOnly && !bestOppositeOrder.isLiquidation) {
           const makerDelta =
             ((bestOppositeOrder.lockedPricePerUnit - fillPrice) * fillQty) /
             bestOppositeOrder.leverage;
@@ -446,7 +611,8 @@ class PerpsExchangeStore {
     } else if (order.filledQuantity > 0) {
       if (order.orderType === "market") {
         order.status = "PARTIALLY_CANCELLED";
-        const amountToUnlock = order.reduceOnly
+        // lockedPricePerUnit = 0 for liquidation → amountToUnlock = 0, no unlock needed.
+        const amountToUnlock = order.reduceOnly || order.isLiquidation
           ? 0
           : ((order.quantity - order.filledQuantity) * order.lockedPricePerUnit) /
             order.leverage;
@@ -470,9 +636,10 @@ class PerpsExchangeStore {
           return input.side === "buy" ? b.price - a.price : a.price - b.price;
         });
       } else {
-        // Market order with 0 fills — cancel and unlock
+        // Market order with 0 fills — cancel and unlock.
+        // Liquidation: requiredMargin = 0, no unlock needed.
         order.status = "CANCELLED";
-        if (!order.reduceOnly) {
+        if (!order.reduceOnly && !order.isLiquidation) {
           this.balanceStore.unlock(order.userId, quote, requiredMargin);
         }
       }

@@ -66,3 +66,8 @@ export type Balance = Prisma.BalanceModel
  * 
  */
 export type OrderbookSnapshot = Prisma.OrderbookSnapshotModel
+/**
+ * Model InsuranceFundEvent
+ * 
+ */
+export type InsuranceFundEvent = Prisma.InsuranceFundEventModel

@@ -64,5 +64,13 @@ export interface FundingSettlementTrigger {
   timestamp: number;
 }
 
-export type UserEvent   = FillEvent | OrderUpdateEvent | PositionUpdateEvent | LiquidationEvent;
+export interface ADLEvent {
+  type: "adl";
+  userId: string;
+  market: string;
+  side: "long" | "short";
+  shortfall: number;
+}
+
+export type UserEvent   = FillEvent | OrderUpdateEvent | PositionUpdateEvent | LiquidationEvent | ADLEvent;
 export type MarketEvent = OrderbookSnapshotEvent | MarkPriceEvent;

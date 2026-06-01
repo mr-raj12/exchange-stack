@@ -388,7 +388,8 @@ export const ModelName = {
   Fill: 'Fill',
   Position: 'Position',
   Balance: 'Balance',
-  OrderbookSnapshot: 'OrderbookSnapshot'
+  OrderbookSnapshot: 'OrderbookSnapshot',
+  InsuranceFundEvent: 'InsuranceFundEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "order" | "fill" | "position" | "balance" | "orderbookSnapshot"
+    modelProps: "order" | "fill" | "position" | "balance" | "orderbookSnapshot" | "insuranceFundEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +779,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InsuranceFundEvent: {
+      payload: Prisma.$InsuranceFundEventPayload<ExtArgs>
+      fields: Prisma.InsuranceFundEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InsuranceFundEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InsuranceFundEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        findFirst: {
+          args: Prisma.InsuranceFundEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InsuranceFundEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        findMany: {
+          args: Prisma.InsuranceFundEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>[]
+        }
+        create: {
+          args: Prisma.InsuranceFundEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        createMany: {
+          args: Prisma.InsuranceFundEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InsuranceFundEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>[]
+        }
+        delete: {
+          args: Prisma.InsuranceFundEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        update: {
+          args: Prisma.InsuranceFundEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.InsuranceFundEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InsuranceFundEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InsuranceFundEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.InsuranceFundEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InsuranceFundEventPayload>
+        }
+        aggregate: {
+          args: Prisma.InsuranceFundEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInsuranceFundEvent>
+        }
+        groupBy: {
+          args: Prisma.InsuranceFundEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InsuranceFundEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InsuranceFundEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InsuranceFundEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -891,6 +966,17 @@ export const OrderbookSnapshotScalarFieldEnum = {
 } as const
 
 export type OrderbookSnapshotScalarFieldEnum = (typeof OrderbookSnapshotScalarFieldEnum)[keyof typeof OrderbookSnapshotScalarFieldEnum]
+
+
+export const InsuranceFundEventScalarFieldEnum = {
+  id: 'id',
+  market: 'market',
+  amount: 'amount',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type InsuranceFundEventScalarFieldEnum = (typeof InsuranceFundEventScalarFieldEnum)[keyof typeof InsuranceFundEventScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1144,6 +1230,7 @@ export type GlobalOmitConfig = {
   position?: Prisma.PositionOmit
   balance?: Prisma.BalanceOmit
   orderbookSnapshot?: Prisma.OrderbookSnapshotOmit
+  insuranceFundEvent?: Prisma.InsuranceFundEventOmit
 }
 
 /* Types for Logging */
