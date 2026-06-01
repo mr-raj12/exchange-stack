@@ -3,6 +3,7 @@ import { readLatestEngineSnapshot } from "../db/writer";
 import { balanceStore } from "../store/balance-store";
 import { spotExchangeStore } from "../store/spot-exchange-store";
 import { perpsExchangeStore } from "../store/perps-exchange-store";
+import { hydrateFromDB } from "../store/hydrator";
 import { WAL_STREAM } from "./writer";
 import { applyWalEntry } from "./apply";
 import type { WalEntry } from "shared";
@@ -11,7 +12,7 @@ export async function restoreFromSnapshotAndReplay(): Promise<void> {
   const snapshot = await readLatestEngineSnapshot();
 
   if (!snapshot) {
-    console.log("[replay] no snapshot found — starting with empty state");
+    await hydrateFromDB();
     return;
   }
 
