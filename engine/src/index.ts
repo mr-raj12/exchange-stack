@@ -10,7 +10,7 @@ import {
   backendResponseChannel,
 } from "shared";
 import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handler";
-import { BinancePriceWs } from "./services/binance-ws";
+import { perpsExchangeStore } from "./store/perps-exchange-store";
 
 function fieldsToObject(fields: string[]): Record<string, string> {
   const obj: Record<string, string> = {};
@@ -30,10 +30,10 @@ async function ensureConsumerGroups() {
   }
 }
 
-async function processMessage(
+async function processOrderMessage(
   streamName: string,
   msgId: string,
-  raw: Record<string, string>
+  raw: Record<string, string>,
 ) {
   const request = JSON.parse(raw["payload"]!) as SpotEngineRequest | PerpsEngineRequest;
   let payload: unknown;
@@ -49,17 +49,24 @@ async function processMessage(
 
   await redis.publish(
     backendResponseChannel(request.backendId),
-    JSON.stringify({ correlationId: request.correlationId, payload })
+    JSON.stringify({ correlationId: request.correlationId, payload }),
   );
   await redis.xack(streamName, ENGINE_CONSUMER_GROUP, msgId);
 }
 
+function processMarkPrice(raw: Record<string, string>): void {
+  const market = raw["market"];
+  const price = Number(raw["price"]);
+  if (!market || !price || isNaN(price)) return;
+  perpsExchangeStore.checkAndLiquidate(market, price);
+}
+
 async function drainPending() {
   for (const stream of [SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM]) {
-    const result = await redis.xreadgroup(
+    const result = (await redis.xreadgroup(
       "GROUP", ENGINE_CONSUMER_GROUP, ENGINE_CONSUMER_NAME,
-      "COUNT", "100", "STREAMS", stream, "0"
-    ) as [string, [string, string[]][]][] | null;
+      "COUNT", "100", "STREAMS", stream, "0",
+    )) as [string, [string, string[]][]][] | null;
     if (!result) continue;
 
     for (const [streamName, messages] of result) {
@@ -71,7 +78,7 @@ async function drainPending() {
           await redis.xack(streamName, ENGINE_CONSUMER_GROUP, msgId);
           continue;
         }
-        await processMessage(streamName, msgId, raw);
+        await processOrderMessage(streamName, msgId, raw);
       }
     }
   }
@@ -84,19 +91,26 @@ async function main(): Promise<void> {
 
   while (true) {
     try {
-      const results = await redis.xreadgroup(
+      const results = (await redis.xreadgroup(
         "GROUP", ENGINE_CONSUMER_GROUP, ENGINE_CONSUMER_NAME,
-        "COUNT", "1",
+        "COUNT", "10",
         "BLOCK", "0",
         "STREAMS",
-        SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM,
-        ">", ">"
-      ) as [string, [string, string[]][]][] | null;
+        SPOT_INCOMING_STREAM, PERPS_INCOMING_STREAM, MARK_PRICE_STREAM,
+        ">", ">", ">",
+      )) as [string, [string, string[]][]][] | null;
       if (!results) continue;
 
       for (const [streamName, messages] of results) {
         for (const [msgId, fields] of messages) {
-          await processMessage(streamName, msgId, fieldsToObject(fields));
+          const raw = fieldsToObject(fields);
+
+          if (streamName === MARK_PRICE_STREAM) {
+            processMarkPrice(raw);
+            await redis.xack(MARK_PRICE_STREAM, ENGINE_CONSUMER_GROUP, msgId);
+          } else {
+            await processOrderMessage(streamName, msgId, raw);
+          }
         }
       }
     } catch (err) {
@@ -105,9 +119,6 @@ async function main(): Promise<void> {
     }
   }
 }
-
-const bs = new BinancePriceWs();
-bs.connect();
 
 main().catch((err) => {
   console.error("engine crashed:", err);
