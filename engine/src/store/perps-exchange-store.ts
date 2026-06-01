@@ -6,7 +6,7 @@ import type {
 } from "../types/perps-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
-import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent, writeFundingRate } from "../db/writer.js";
+import { writeOrder, writeFill, writePosition, writeBalance, writeInsuranceFundEvent, writeFundingRate, writeOrderbookSnapshot } from "../db/writer.js";
 import { INSURANCE_FUND_USER_ID } from "../constants.js";
 import { publishUserEvent, publishMarketEvent, publishOrderbookSnapshot } from "../publisher.js";
 
@@ -68,6 +68,7 @@ class PerpsExchangeStore {
     const bids: [string, string][] = Array.from(bidLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
     const asks: [string, string][] = Array.from(askLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
     publishOrderbookSnapshot(market, bids, asks);
+    writeOrderbookSnapshot(market, "PERPS", bids, asks);
   }
 
   private calculateLiquidationPrice(

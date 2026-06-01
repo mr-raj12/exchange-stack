@@ -157,6 +157,21 @@ export function writeFundingRate(
   });
 }
 
+// Write the post-match orderbook depth snapshot so the poller can read it and
+// push it to WS clients on an interval even when no new trades occur.
+export function writeOrderbookSnapshot(
+  market: string,
+  exchange: "SPOT" | "PERPS",
+  bids: [string, string][],
+  asks: [string, string][],
+): void {
+  enqueueWrite(() =>
+    prisma.orderbookSnapshot.create({
+      data: { market, exchange, bids, asks },
+    }).then(() => {})
+  );
+}
+
 // Snapshot current available + locked for a user/asset after a fill settles.
 export function writeBalance(userId: string, asset: string, available: number, locked: number): void {
   enqueueWrite(() =>

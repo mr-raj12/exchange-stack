@@ -5,7 +5,7 @@ import type {
 } from "../types/spot-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
-import { writeOrder, writeFill, writeBalance } from "../db/writer.js";
+import { writeOrder, writeFill, writeBalance, writeOrderbookSnapshot } from "../db/writer.js";
 import { publishUserEvent, publishOrderbookSnapshot } from "../publisher.js";
 
 class SpotExchangeStore {
@@ -50,6 +50,7 @@ class SpotExchangeStore {
     const bids: [string, string][] = Array.from(bidLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
     const asks: [string, string][] = Array.from(askLevels.entries()).map(([p, q]) => [p.toString(), q.toString()]);
     publishOrderbookSnapshot(market, bids, asks);
+    writeOrderbookSnapshot(market, "SPOT", bids, asks);
   }
 
   //   Omit<Order, "orderId" | "filledQuantity"> means Order se ye do field hta do
