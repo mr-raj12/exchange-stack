@@ -5,6 +5,7 @@ import type {
 } from "../types/spot-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
+import { writeOrder, writeFill, writeBalance } from "../db/writer.js";
 
 class SpotExchangeStore {
   // private balanceStore:BalanceStore
@@ -127,9 +128,11 @@ class SpotExchangeStore {
     };
     this.balanceStore.lock(input.userId, asset, amountToLock);
     this.spotOrders.set(orderId, order);
+    writeOrder(order, "SPOT"); // insert row before any fill can reference it
     const oppositeSide = input.side === "buy" ? "asks" : "bids";
     const ob = this.spotOrderBooks.get(input.market) || { bids: [], asks: [] };
     const toIterate = ob[oppositeSide];
+    const affectedMakerIds = new Set<string>();
     while (order.filledQuantity < order.quantity && toIterate.length > 0) {
       // priority, record fills, handle partial fills, support limit
       const bestOrder = toIterate[0] as SpotOrder;
@@ -160,8 +163,10 @@ class SpotExchangeStore {
       order.filledQuantity += qtyToFill;
       bestOrder.filledQuantity += qtyToFill;
       bestOrder.fills.push(fill);
+      writeFill(fill, bestOrder.side); // two DB rows: one per side
       // dono user ka balance and locked update kro
       const makerUserId = bestOrder.userId;
+      affectedMakerIds.add(makerUserId);
       const takerUserId = order.userId;
       order.avgPrice =
         (order.avgPrice * (order.filledQuantity - fill.quantity) +
@@ -209,6 +214,7 @@ class SpotExchangeStore {
       } else {
         bestOrder.status = "PARTIALLY_FILLED";
       }
+      writeOrder(bestOrder, "SPOT"); // update maker order status + filledQty
       if (order.filledQuantity === order.quantity) {
         order.status = "FILLED";
       } else if (order.filledQuantity > 0) {
@@ -238,6 +244,8 @@ class SpotExchangeStore {
             order.quantity - order.filledQuantity,
           );
         }
+        writeOrder(order, "SPOT");
+        this.flushBalances(order.userId, affectedMakerIds, base, quote);
         return order;
       }
       // type to limit he hoga
@@ -252,7 +260,24 @@ class SpotExchangeStore {
         return input.side === "buy" ? b.price - a.price : a.price - b.price; // buy m higher price priority, sell m lower price priority
       });
     }
+    writeOrder(order, "SPOT");
+    this.flushBalances(order.userId, affectedMakerIds, base, quote);
     return order;
+  }
+
+  private flushBalances(
+    takerId: string,
+    makerIds: Set<string>,
+    base: string,
+    quote: string,
+  ): void {
+    for (const userId of [takerId, ...makerIds]) {
+      const bal = this.balanceStore.getBalance(userId);
+      const lck = this.balanceStore.getLocked(userId);
+      for (const asset of [base, quote]) {
+        writeBalance(userId, asset, bal.get(asset) ?? 0, lck.get(asset) ?? 0);
+      }
+    }
   }
 
   cancelOrder(_market: string, orderId: string): SpotOrder {
@@ -302,6 +327,7 @@ class SpotExchangeStore {
       const amountToUnlock = order.quantity - order.filledQuantity;
       this.balanceStore.unlock(order.userId, base, amountToUnlock);
     }
+    writeOrder(order, "SPOT");
     return order;
   }
 

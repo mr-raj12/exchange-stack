@@ -6,6 +6,7 @@ import type {
 } from "../types/perps-exchange-store-types";
 import { randomUUID } from "crypto";
 import { balanceStore, BalanceStore } from "./balance-store";
+import { writeOrder, writeFill, writePosition, writeBalance } from "../db/writer.js";
 
 // Input type for order creation — excludes engine-computed fields; reduceOnly is optional (defaults false).
 type CreateOrderInput = Omit<
@@ -93,6 +94,7 @@ class PerpsExchangeStore {
         timestamp: Date.now(),
       };
       posMap.set(order.userId, newPos);
+      writePosition(newPos);
       return;
     }
 
@@ -111,6 +113,7 @@ class PerpsExchangeStore {
         weightedEntry,
         existingPos.leverage,
       );
+      writePosition(existingPos);
       return;
     }
 
@@ -147,6 +150,7 @@ class PerpsExchangeStore {
       if (!order.reduceOnly) {
         this.balanceStore.unlock(order.userId, quote, addedMargin);
       }
+      writePosition(existingPos);
       return;
     }
 
@@ -166,6 +170,7 @@ class PerpsExchangeStore {
 
       existingPos.status = "CLOSED";
       existingPos.size = 0;
+      writePosition(existingPos); // capture closed state before delete
       posMap.delete(order.userId);
       return;
     }
@@ -191,7 +196,9 @@ class PerpsExchangeStore {
         this.balanceStore.unlock(order.userId, quote, closingPortionMargin);
       }
 
+      const closedSnapForDb: PerpsPosition = { ...existingPos, status: "CLOSED", size: 0 };
       posMap.delete(order.userId);
+      writePosition(closedSnapForDb);
 
       // Open new position in opposite direction (leftover qty)
       const flippedMargin = (priceForMargin * leftoverQty) / order.leverage;
@@ -209,6 +216,7 @@ class PerpsExchangeStore {
         timestamp: Date.now(),
       };
       posMap.set(order.userId, flippedPos);
+      writePosition(flippedPos);
     }
   }
 
@@ -344,10 +352,12 @@ class PerpsExchangeStore {
     }
 
     this.perpsOrders.set(orderId, order);
+    writeOrder(order, "PERPS"); // insert row before any fill can reference it
 
     const oppositeSide = input.side === "buy" ? "asks" : "bids";
     const toIterate = ob[oppositeSide];
     let matched = true;
+    const affectedMakerIds = new Set<string>();
 
     while (
       toIterate.length > 0 &&
@@ -384,6 +394,8 @@ class PerpsExchangeStore {
         bestOppositeOrder.filledQuantity += fillQty;
         order.fills.push(fill);
         bestOppositeOrder.fills.push(fill);
+        writeFill(fill, bestOppositeOrder.side);
+        affectedMakerIds.add(bestOppositeOrder.userId);
 
         // Update avg prices
         order.avgPrice =
@@ -425,6 +437,7 @@ class PerpsExchangeStore {
         } else {
           bestOppositeOrder.status = "PARTIALLY_FILLED";
         }
+        writeOrder(bestOppositeOrder, "PERPS");
       }
     }
 
@@ -465,7 +478,21 @@ class PerpsExchangeStore {
       }
     }
 
+    writeOrder(order, "PERPS");
+    this.flushPerpsBalances(order.userId, affectedMakerIds, quote);
     return order;
+  }
+
+  private flushPerpsBalances(
+    takerId: string,
+    makerIds: Set<string>,
+    quote: string,
+  ): void {
+    for (const userId of [takerId, ...makerIds]) {
+      const bal = this.balanceStore.getBalance(userId);
+      const lck = this.balanceStore.getLocked(userId);
+      writeBalance(userId, quote, bal.get(quote) ?? 0, lck.get(quote) ?? 0);
+    }
   }
 
   cancelPerpsOrder(_market: string, orderId: string): PerpsOrder {
@@ -502,6 +529,7 @@ class PerpsExchangeStore {
       this.balanceStore.unlock(order.userId, order.market.split("_")[1]!, unfilledMargin);
     }
 
+    writeOrder(order, "PERPS");
     return order;
   }
 

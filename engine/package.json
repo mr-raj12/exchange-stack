@@ -9,15 +9,19 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "prisma": "^7.8.0"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "shared": "file:../shared",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "dotenv": "^17.4.2",
     "ioredis": "^5.10.1",
+    "pg": "^8.20.0",
     "ws": "^8.20.1"
   }
 }

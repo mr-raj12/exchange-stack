@@ -1,7 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Engine write-only schema.
+// DO NOT run `prisma migrate` from engine/ — migrations are owned by backend/.
+// Run only: bunx prisma generate
 
 generator client {
   provider = "prisma-client"
@@ -10,22 +9,16 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // no url — PrismaPg driver adapter provides connection at runtime
 }
-// no url as when using a driver adapter, prisma doesnt need connection string in schema, adapter is what holds the connction
 
-model User {
-  id        String     @id @default(uuid())
-  username  String     @unique
-  password  String
-  orders    Order[]
-  positions Position[]
-  balances  Balance[]
-}
+// No User model — engine never writes to users table.
+// No Prisma relations — userId/orderId are plain FK strings; DB constraints
+// are already created by backend/ migrations.
 
 model Order {
   id           String   @id
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
   market       String
   side         String
   orderType    String
@@ -37,7 +30,6 @@ model Order {
   leverage     Int?
   reduceOnly   Boolean  @default(false)
   exchange     String
-  fills        Fill[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -45,7 +37,6 @@ model Order {
 model Fill {
   id        String   @id @default(uuid())
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
   price     Decimal  @db.Decimal(20, 8)
   quantity  Decimal  @db.Decimal(20, 8)
   makerSide String
@@ -55,7 +46,6 @@ model Fill {
 model Position {
   id               String   @id
   userId           String
-  user             User     @relation(fields: [userId], references: [id])
   market           String
   side             String
   quantity         Decimal  @db.Decimal(20, 8)
@@ -74,7 +64,6 @@ model Position {
 model Balance {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   asset     String
   available Decimal  @db.Decimal(20, 8) @default(0)
   locked    Decimal  @db.Decimal(20, 8) @default(0)
