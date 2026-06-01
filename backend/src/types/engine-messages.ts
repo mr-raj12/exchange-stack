@@ -12,11 +12,10 @@ export type EngineRequestType = // union of string literals, type m union hota h
 // types support intersection
 // < > is called generics, both type and interface can use this
 export interface EngineRequest<T = unknown> {
-  // T = generic
   type: EngineRequestType;
   data: T;
   correlationId: string;
-  responseQueue: string;
+  backendId: string;
 }
 
 export interface EngineResponse<T = unknown> {

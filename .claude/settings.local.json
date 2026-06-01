@@ -48,7 +48,8 @@
       "Bash(Get-ChildItem -Path \"g:\\\\s30\\\\cex-v2\\\\backend\" -Depth 2)",
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Format-Table -AutoSize)",
-      "Bash(Remove-Item *)"
+      "Bash(Remove-Item *)",
+      "PowerShell($files = @\\(\"G:\\\\s30\\\\cex-v2\\\\test-binance-ws.ts\", \"G:\\\\s30\\\\cex-v2\\\\test-binance-ws-native.ts\", \"G:\\\\s30\\\\cex-v2\\\\flush-queues.ts\"\\); foreach \\($f in $files\\) { if \\(Test-Path $f\\) { \"STILL EXISTS: $f\" } else { \"deleted: $f\" } })"
     ],
     "additionalDirectories": [
       "C:\\Users\\Mrityunjay Raj"
