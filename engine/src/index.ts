@@ -12,6 +12,8 @@ import {
 } from "shared";
 import { handleEngineRequestForPerps, handleEngineRequestForSpot } from "./handler";
 import { perpsExchangeStore } from "./store/perps-exchange-store";
+import { balanceStore } from "./store/balance-store";
+import { INSURANCE_FUND_USER_ID } from "./constants";
 
 function fieldsToObject(fields: string[]): Record<string, string> {
   const obj: Record<string, string> = {};
@@ -85,7 +87,15 @@ async function drainPending() {
   }
 }
 
+function seedInsuranceFund(): void {
+  const seedAmt = Number(process.env.INSURANCE_FUND_SEED_USD) || 0;
+  if (seedAmt <= 0) return;
+  balanceStore.credit(INSURANCE_FUND_USER_ID, "USD", seedAmt);
+  console.log(`[engine] insurance fund seeded with ${seedAmt} USD`);
+}
+
 async function main(): Promise<void> {
+  seedInsuranceFund();
   await ensureConsumerGroups();
   await drainPending();
   console.log("Engine listening on streams...");
