@@ -15,6 +15,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "shared": "file:../shared",
     "dotenv": "^17.4.2",
     "ioredis": "^5.10.1",
     "ws": "^8.20.1"
